@@ -6,6 +6,8 @@ import { createJSONStorage, persist } from "zustand/middleware";
 /** Almacenamiento persistente: SecureStore en iOS, localStorage en web. */
 const crearStorage = () => {
 	if (Platform.OS === "web") {
+		// typeof window check: localStorage no existe en SSR (Expo static output)
+		if (typeof window === "undefined") return undefined;
 		return createJSONStorage(() => localStorage);
 	}
 	// expo-secure-store: importación diferida para no romper en web
@@ -22,9 +24,12 @@ interface AuthState {
 	isAuthenticated: boolean;
 	userRole: string | null;
 	userName: string | null;
+	/** false hasta que el store se rehidrate desde almacenamiento persistente */
+	hydrated: boolean;
 	login: (usuario: string, password: string) => Promise<boolean>;
 	logout: () => void;
 	esAdmin: () => boolean;
+	setHydrated: (v: boolean) => void;
 }
 
 interface DecodedToken {
@@ -40,6 +45,7 @@ export const useAuth = create<AuthState>()(
 			isAuthenticated: false,
 			userRole: null,
 			userName: null,
+			hydrated: false,
 			login: async (usuario: string, password: string) => {
 				try {
 					const [{ api }, { LoginDTO }] = await Promise.all([
@@ -75,10 +81,23 @@ export const useAuth = create<AuthState>()(
 				const { userRole } = get();
 				return userRole === "Administrador";
 			},
+			setHydrated: (v: boolean) => set({ hydrated: v }),
 		}),
 		{
 			name: "auth-storage",
 			storage: crearStorage(),
+			// skipHydration evita hidratación sincrónica que genera mismatch en React 19
+			// con Expo Router output:static (SSR). Se rehidrata explícitamente en useEffect.
+			skipHydration: true,
+			partialize: (state) => ({
+				token: state.token,
+				isAuthenticated: state.isAuthenticated,
+				userRole: state.userRole,
+				userName: state.userName,
+			}),
+			onRehydrateStorage: () => (state) => {
+				state?.setHydrated(true);
+			},
 		},
 	),
 );

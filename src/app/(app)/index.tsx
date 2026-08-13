@@ -20,7 +20,7 @@ const subtituloCarpeta = (c: CarpetaDTO): string => {
 
 export default function Inicio() {
 	const { irANuevaCarpeta, irALogin, irAPapelera, irAHabitos, verEscritosDeLaCarpeta } = usarNavegacion();
-	const { logout } = useAuth();
+	const logout = useAuth((s) => s.logout);
 
 	const { data, isLoading } = useApiQuery({
 		fn: () => api.carpetaAll(),

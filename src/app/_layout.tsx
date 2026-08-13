@@ -6,7 +6,9 @@ import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import NetInfo from "@react-native-community/netinfo";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useEstadoSync } from "@/sync/estado-sync";
+import { useAuth } from "@/hooks/use-auth";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,16 +34,27 @@ function NetInfoMonitor() {
 	return null;
 }
 
+function AuthHydrator() {
+	useEffect(() => {
+		useAuth.persist.rehydrate();
+	}, []);
+
+	return null;
+}
+
 export default function RootLayout() {
 	useEffect(() => {
 		SplashScreen.hideAsync();
 	}, []);
 
 	return (
-		<QueryClientProvider client={queryClient}>
-			<NetInfoMonitor />
-			<Stack screenOptions={{ headerShown: false }} />
-			<Toast />
-		</QueryClientProvider>
+		<SafeAreaProvider>
+			<QueryClientProvider client={queryClient}>
+				<AuthHydrator />
+				<NetInfoMonitor />
+				<Stack screenOptions={{ headerShown: false }} />
+				<Toast />
+			</QueryClientProvider>
+		</SafeAreaProvider>
 	);
 }

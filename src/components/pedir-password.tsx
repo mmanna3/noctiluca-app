@@ -20,7 +20,7 @@ const PedirPassword = ({ motivo, onDesbloqueado, compacto = false }: Props) => {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
-	const { userName } = useAuth();
+	const userName = useAuth((s) => s.userName);
 	const { validarOffline, renovarSesion } = useSesionPrivada();
 	const verificadorOffline = useSesionPrivada((s) => s.verificadorOffline);
 
