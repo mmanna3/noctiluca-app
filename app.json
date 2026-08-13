@@ -9,8 +9,7 @@
     "platforms": ["ios", "web"],
     "ios": {
       "bundleIdentifier": "com.mmanna3.noctiluca",
-      "supportsTablet": false,
-      "icon": "./assets/expo.icon"
+      "supportsTablet": false
     },
     "web": {
       "output": "static",
@@ -32,6 +31,7 @@
       "reactCompiler": true
     },
     "extra": {
+      "apiUrl": "https://FILL_IN_BACKEND_URL",
       "eas": {
         "projectId": "1b420a94-3b41-4685-8e13-74fe33fa8eb1"
       }
