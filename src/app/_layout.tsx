@@ -36,7 +36,7 @@ function NetInfoMonitor() {
 
 function AuthHydrator() {
 	useEffect(() => {
-		useAuth.persist.rehydrate();
+		void useAuth.getState().hydrate();
 	}, []);
 
 	return null;

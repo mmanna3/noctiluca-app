@@ -1,36 +1,35 @@
 import { jwtDecode } from "jwt-decode";
 import { Platform } from "react-native";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 
-/** Almacenamiento persistente: SecureStore en iOS, localStorage en web. */
-const crearStorage = () => {
+const STORAGE_KEY = "auth-token";
+
+const guardarToken = async (token: string) => {
 	if (Platform.OS === "web") {
-		// typeof window check: localStorage no existe en SSR (Expo static output)
-		if (typeof window === "undefined") return undefined;
-		return createJSONStorage(() => localStorage);
+		if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEY, token);
+	} else {
+		const SecureStore = require("expo-secure-store");
+		await SecureStore.setItemAsync(STORAGE_KEY, token);
 	}
-	// expo-secure-store: importación diferida para no romper en web
-	const SecureStore = require("expo-secure-store");
-	return createJSONStorage(() => ({
-		getItem: (key: string) => SecureStore.getItemAsync(key),
-		setItem: (key: string, value: string) => SecureStore.setItemAsync(key, value),
-		removeItem: (key: string) => SecureStore.deleteItemAsync(key),
-	}));
 };
 
-interface AuthState {
-	token: string | null;
-	isAuthenticated: boolean;
-	userRole: string | null;
-	userName: string | null;
-	/** false hasta que el store se rehidrate desde almacenamiento persistente */
-	hydrated: boolean;
-	login: (usuario: string, password: string) => Promise<boolean>;
-	logout: () => void;
-	esAdmin: () => boolean;
-	setHydrated: (v: boolean) => void;
-}
+const leerToken = async (): Promise<string | null> => {
+	if (Platform.OS === "web") {
+		if (typeof window === "undefined") return null;
+		return localStorage.getItem(STORAGE_KEY);
+	}
+	const SecureStore = require("expo-secure-store");
+	return SecureStore.getItemAsync(STORAGE_KEY);
+};
+
+const eliminarToken = async () => {
+	if (Platform.OS === "web") {
+		if (typeof window !== "undefined") localStorage.removeItem(STORAGE_KEY);
+	} else {
+		const SecureStore = require("expo-secure-store");
+		await SecureStore.deleteItemAsync(STORAGE_KEY);
+	}
+};
 
 interface DecodedToken {
 	role: string;
@@ -38,66 +37,77 @@ interface DecodedToken {
 	[key: string]: string | number | boolean | undefined;
 }
 
-export const useAuth = create<AuthState>()(
-	persist(
-		(set, get) => ({
-			token: null,
-			isAuthenticated: false,
-			userRole: null,
-			userName: null,
-			hydrated: false,
-			login: async (usuario: string, password: string) => {
-				try {
-					const [{ api }, { LoginDTO }] = await Promise.all([
-						import("../api/api"),
-						import("../api/clients"),
-					]);
-					const loginRequest = new LoginDTO({ usuario, password });
-					const response = await api.login(loginRequest);
+interface AuthState {
+	token: string | null;
+	isAuthenticated: boolean;
+	userRole: string | null;
+	userName: string | null;
+	/** false hasta que se lee el token guardado en storage al arrancar */
+	hydrated: boolean;
+	login: (usuario: string, password: string) => Promise<boolean>;
+	logout: () => void;
+	esAdmin: () => boolean;
+	hydrate: () => Promise<void>;
+}
 
-					if (response.exito && response.token) {
-						const decodedToken = jwtDecode<DecodedToken>(response.token);
-						set({
-							token: response.token,
-							isAuthenticated: true,
-							userRole: decodedToken.role,
-							userName: decodedToken.name || usuario,
-						});
-						return true;
-					}
+export const useAuth = create<AuthState>((set, get) => ({
+	token: null,
+	isAuthenticated: false,
+	userRole: null,
+	userName: null,
+	hydrated: false,
 
-					return false;
-				} catch (error) {
-					console.error("Error en login:", error);
-					return false;
-				}
-			},
-			logout: () => {
-				const { useSesionPrivada } = require("./use-sesion-privada");
-				useSesionPrivada.getState().limpiarSesion();
-				set({ token: null, isAuthenticated: false, userRole: null, userName: null });
-			},
-			esAdmin: () => {
-				const { userRole } = get();
-				return userRole === "Administrador";
-			},
-			setHydrated: (v: boolean) => set({ hydrated: v }),
-		}),
-		{
-			name: "auth-storage",
-			storage: crearStorage(),
-			// skipHydration evita hidratación sincrónica que genera mismatch en React 19
-			// con Expo Router output:static (SSR). Se rehidrata explícitamente en useEffect.
-			skipHydration: true,
-			partialize: (state) => ({
-				token: state.token,
-				isAuthenticated: state.isAuthenticated,
-				userRole: state.userRole,
-				userName: state.userName,
-			}),
-			onRehydrateStorage: () => (state) => {
-				state?.setHydrated(true);
-			},
-		},
-	),
-);
+	login: async (usuario: string, password: string) => {
+		try {
+			const [{ api }, { LoginDTO }] = await Promise.all([
+				import("../api/api"),
+				import("../api/clients"),
+			]);
+			const response = await api.login(new LoginDTO({ usuario, password }));
+			if (response.exito && response.token) {
+				const decoded = jwtDecode<DecodedToken>(response.token);
+				await guardarToken(response.token);
+				set({
+					token: response.token,
+					isAuthenticated: true,
+					userRole: decoded.role,
+					userName: decoded.name || usuario,
+				});
+				return true;
+			}
+			return false;
+		} catch (error) {
+			console.error("Error en login:", error);
+			return false;
+		}
+	},
+
+	logout: () => {
+		void eliminarToken();
+		const { useSesionPrivada } = require("./use-sesion-privada");
+		useSesionPrivada.getState().limpiarSesion();
+		set({ token: null, isAuthenticated: false, userRole: null, userName: null });
+	},
+
+	esAdmin: () => get().userRole === "Administrador",
+
+	hydrate: async () => {
+		try {
+			const token = await leerToken();
+			if (token) {
+				const decoded = jwtDecode<DecodedToken>(token);
+				set({
+					token,
+					isAuthenticated: true,
+					userRole: decoded.role,
+					userName: decoded.name ?? null,
+					hydrated: true,
+				});
+			} else {
+				set({ hydrated: true });
+			}
+		} catch {
+			set({ hydrated: true });
+		}
+	},
+}));
