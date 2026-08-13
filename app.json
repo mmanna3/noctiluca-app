@@ -31,7 +31,7 @@
       "reactCompiler": true
     },
     "extra": {
-      "apiUrl": "https://FILL_IN_BACKEND_URL",
+      "apiUrl": "https://trusting-burnell.192-64-87-146.plesk.page",
       "eas": {
         "projectId": "1b420a94-3b41-4685-8e13-74fe33fa8eb1"
       }
