@@ -9,10 +9,8 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import ListaItem from "@/components/ui/lista-item";
 import { useAuth } from "@/hooks/use-auth";
 import usarNavegacion from "@/usar-navegacion";
-import { useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Toast from "react-native-toast-message";
 
 const subtituloCarpeta = (c: CarpetaDTO): string => {
 	const cantidad = c.cantidadDeEscritos ?? 0;
@@ -21,9 +19,8 @@ const subtituloCarpeta = (c: CarpetaDTO): string => {
 };
 
 export default function Inicio() {
-	const { irANuevaCarpeta, irALogin, irAPapelera, verEscritosDeLaCarpeta } = usarNavegacion();
+	const { irANuevaCarpeta, irALogin, irAPapelera, irAHabitos, verEscritosDeLaCarpeta } = usarNavegacion();
 	const { logout } = useAuth();
-	const [busquedaAbierta, setBusquedaAbierta] = useState(false);
 
 	const { data, isLoading } = useApiQuery({
 		fn: () => api.carpetaAll(),
@@ -51,7 +48,7 @@ export default function Inicio() {
 		<View className="flex-1">
 			<Encabezado>
 				<View className="flex-row items-center gap-1">
-					<Boton soloBorde onClick={() => {}}>
+					<Boton soloBorde onClick={irAHabitos}>
 						/
 					</Boton>
 				</View>
