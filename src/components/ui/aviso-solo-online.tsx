@@ -10,7 +10,8 @@ const AvisoSoloOnline = ({
 	mensaje = "Esta función requiere conexión a internet.",
 }: Props) => (
 	<View
-		accessibilityRole="status"
+		accessibilityRole="text"
+		accessibilityLiveRegion="polite"
 		className={`bg-amber-50 border border-amber-200 rounded-md px-3 py-2 ${className}`}
 	>
 		<Text className="text-sm text-amber-800">{mensaje}</Text>
