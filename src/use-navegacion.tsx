@@ -34,17 +34,17 @@ const useNavegacion = () => {
 			router.replace(`/${idCarpeta}/nuevo`);
 		},
 		irACarpeta: (cId: number) => router.push(`/${cId}/escritos`),
-		irANuevaCarpeta: () => router.replace("/nueva-carpeta"),
-		irANuevaSubcarpeta: () => router.replace(`/${carpetaId}/nueva-subcarpeta`),
-		irAPapelera: () => router.replace("/papelera"),
-		irAModoLectura: () => router.replace("/modo-lectura"),
-		irAHabitos: () => router.replace("/habitos"),
-		irAResumenHabitos: () => router.replace("/resumen-habitos"),
+		irANuevaCarpeta: () => router.push("/nueva-carpeta"),
+		irANuevaSubcarpeta: () => router.push(`/${carpetaId}/nueva-subcarpeta`),
+		irAPapelera: () => router.push("/papelera"),
+		irAModoLectura: () => router.push("/modo-lectura"),
+		irAHabitos: () => router.push("/habitos"),
+		irAResumenHabitos: () => router.push("/resumen-habitos"),
 		irAListaObjetivos: (carpetaIdDestino: number, listaIdDestino: number) =>
 			router.push(`/${carpetaIdDestino}/lista-objetivos/${listaIdDestino}`),
-		irACarpetasPrivadas: () => router.replace("/carpetas-privadas"),
-		irAAdministrarHabitos: () => router.replace("/administrar-habitos"),
-		irABuscarEscritos: () => router.replace("/buscar-escritos"),
+		irACarpetasPrivadas: () => router.push("/carpetas-privadas"),
+		irAAdministrarHabitos: () => router.push("/administrar-habitos"),
+		irABuscarEscritos: () => router.push("/buscar-escritos"),
 		irAHistoricoObjetivos: (cId: number) => router.push(`/${cId}/historico-objetivos`),
 	};
 };

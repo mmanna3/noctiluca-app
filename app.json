@@ -6,12 +6,16 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "platforms": ["ios", "web"],
+    "platforms": [
+      "ios",
+      "web"
+    ],
     "ios": {
       "bundleIdentifier": "com.mmanna3.noctiluca",
       "supportsTablet": false,
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Noctiluca usa Face ID para desbloquear el acceso a la app y a las carpetas privadas."
+        "NSFaceIDUsageDescription": "Noctiluca usa Face ID para desbloquear el acceso a la app y a las carpetas privadas.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "web": {
@@ -28,7 +32,8 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,

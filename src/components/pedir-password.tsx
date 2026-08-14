@@ -130,9 +130,9 @@ const PedirPassword = ({ motivo, onDesbloqueado, compacto = false }: Props) => {
 						<TouchableOpacity
 							onPress={handleSubmit}
 							disabled={isLoading}
-							className={`w-full border border-slate-900 h-10 px-4 rounded items-center justify-center ${isLoading ? "opacity-50" : ""}`}
+							className={`w-full border border-slate-900 h-11 px-4 rounded items-center justify-center ${isLoading ? "opacity-50" : ""}`}
 						>
-							{isLoading ? <LoadingSpinner /> : <Text className="text-slate-900 text-sm font-medium">!</Text>}
+							{isLoading ? <LoadingSpinner /> : <Text className="text-slate-900 text-base font-medium">Desbloquear</Text>}
 						</TouchableOpacity>
 					</View>
 				</CardContent>
