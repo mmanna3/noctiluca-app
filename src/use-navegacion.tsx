@@ -31,7 +31,7 @@ const useNavegacion = () => {
 		volverAPapelera: () => router.replace("/papelera"),
 		irANuevoEscrito: (carpetaIdDestino?: string | number) => {
 			const idCarpeta = carpetaIdDestino ?? carpetaId;
-			router.replace(`/${idCarpeta}/nuevo`);
+			router.push(`/${idCarpeta}/nuevo`);
 		},
 		irACarpeta: (cId: number) => router.push(`/${cId}/escritos`),
 		irANuevaCarpeta: () => router.push("/nueva-carpeta"),

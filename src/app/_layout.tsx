@@ -14,11 +14,9 @@ import { useFonts, Merriweather_400Regular, Merriweather_700Bold } from "@expo-g
 
 SplashScreen.preventAutoHideAsync();
 
-// Aplica Merriweather a todos los Text y TextInput de la app
-if (Text.defaultProps == null) (Text as any).defaultProps = {};
-(Text.defaultProps as any).style = { fontFamily: "Merriweather_400Regular" };
-if (TextInput.defaultProps == null) (TextInput as any).defaultProps = {};
-(TextInput.defaultProps as any).style = { fontFamily: "Merriweather_400Regular" };
+// Aplica Merriweather globalmente a todos los Text y TextInput
+(Text as any).defaultProps = { style: { fontFamily: "Merriweather_400Regular", fontSize: 16 } };
+(TextInput as any).defaultProps = { style: { fontFamily: "Merriweather_400Regular", fontSize: 16 } };
 
 const queryClient = new QueryClient({
 	defaultOptions: {
