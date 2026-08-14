@@ -5,6 +5,7 @@
 	"build": {
 		"internal": {
 			"distribution": "internal",
+			"channel": "production",
 			"ios": {
 				"resourceClass": "m-medium"
 			}
