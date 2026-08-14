@@ -44,6 +44,18 @@
       "eas": {
         "projectId": "1b420a94-3b41-4685-8e13-74fe33fa8eb1"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1b420a94-3b41-4685-8e13-74fe33fa8eb1"
+    },
+    "android": {
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ]
     }
   }
 }
