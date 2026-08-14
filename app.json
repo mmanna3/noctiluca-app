@@ -9,7 +9,10 @@
     "platforms": ["ios", "web"],
     "ios": {
       "bundleIdentifier": "com.mmanna3.noctiluca",
-      "supportsTablet": false
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Noctiluca usa Face ID para desbloquear el acceso a la app y a las carpetas privadas."
+      }
     },
     "web": {
       "output": "static",
@@ -17,6 +20,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-local-authentication",
       [
         "expo-splash-screen",
         {
