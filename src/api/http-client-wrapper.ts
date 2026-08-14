@@ -1,6 +1,7 @@
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
 import { useAuth } from "@/hooks/use-auth";
+import { useEstadoSync } from "@/sync/estado-sync";
 
 export class HttpClientWrapper {
 	private publicRoutes = ["/api/Auth/login", "/api/Publico"];
@@ -28,20 +29,28 @@ export class HttpClientWrapper {
 			};
 		}
 
-		return fetch(url as RequestInfo, init).then(async (response) => {
-			if (response.status === 401 && !isPublicRoute) {
-				useAuth.getState().logout();
-				Toast.show({ type: "error", text1: "Token vencido" });
-				router.replace("/login");
-				throw new Error("Token vencido");
-			} else if (response.status === 403 && !isPublicRoute) {
-				useAuth.getState().logout();
-				Toast.show({ type: "error", text1: "Usuario no tiene permisos" });
-				router.replace("/login");
-				throw new Error("Usuario no tiene permisos");
-			}
-			return response;
-		});
+		const { incrementarSolicitudes, decrementarSolicitudes } = useEstadoSync.getState();
+		incrementarSolicitudes();
+		return fetch(url as RequestInfo, init)
+			.then(async (response) => {
+				decrementarSolicitudes();
+				if (response.status === 401 && !isPublicRoute) {
+					useAuth.getState().logout();
+					Toast.show({ type: "error", text1: "Token vencido" });
+					router.replace("/login");
+					throw new Error("Token vencido");
+				} else if (response.status === 403 && !isPublicRoute) {
+					useAuth.getState().logout();
+					Toast.show({ type: "error", text1: "Usuario no tiene permisos" });
+					router.replace("/login");
+					throw new Error("Usuario no tiene permisos");
+				}
+				return response;
+			})
+			.catch((error) => {
+				decrementarSolicitudes();
+				throw error;
+			});
 	}
 
 	private isPublicRoute(url: string): boolean {

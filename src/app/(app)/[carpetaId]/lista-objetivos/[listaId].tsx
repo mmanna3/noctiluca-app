@@ -8,7 +8,7 @@ import Encabezado from "@/components/ui/encabezado";
 import { Input } from "@/components/ui/input-ui";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import PuntoMarcador from "@/components/ui/punto-marcador";
-import usarNavegacion from "@/usar-navegacion";
+import useNavegacion from "@/use-navegacion";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
@@ -16,7 +16,7 @@ import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function ListaObjetivos() {
-	const { irAlInicio, listaId } = usarNavegacion();
+	const { irAlInicio, listaId } = useNavegacion();
 	const queryClient = useQueryClient();
 	const [nuevoTexto, setNuevoTexto] = useState("");
 	const [creando, setCreando] = useState(false);

@@ -18,6 +18,7 @@ const useApiMutation = <T,>({
 	mensajeDeError = "Ocurrió un error inesperado",
 	invalidarQueries,
 }: IProps<T>) => {
+	"use no memo";
 	const queryClient = useQueryClient();
 
 	const mutation = useMutation({

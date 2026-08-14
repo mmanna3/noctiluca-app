@@ -7,17 +7,17 @@ import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import PuntoMarcador from "@/components/ui/punto-marcador";
-import usarNavegacion from "@/usar-navegacion";
+import useNavegacion from "@/use-navegacion";
 import { fechaCalendarioLocal } from "@/sync/fechas";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 import { diasDeSemana, esMismaFecha, inicioDeSemana, nombreDiaCorto } from "@/pantallas/habitos/utilidades-habitos";
 
 export default function HabitosScreen() {
-	const { irAlInicio } = usarNavegacion();
+	const { irAlInicio, irAAdministrarHabitos, irAResumenHabitos } = useNavegacion();
 	const queryClient = useQueryClient();
 	const [semanaReferencia, setSemanaReferencia] = useState(() => inicioDeSemana(new Date()));
 	const [diaSeleccionado, setDiaSeleccionado] = useState(() => new Date());
@@ -34,16 +34,16 @@ export default function HabitosScreen() {
 	const registrar = async (habito: HabitoTrackerItemDTO, valor: boolean | number) => {
 		if (!habito.id) return;
 		try {
-			const dto = new UpsertRegistroHabitoDTO({
+			await api.registro(new UpsertRegistroHabitoDTO({
 				habitoId: habito.id,
 				fecha: fechaCalendarioLocal(diaSeleccionado),
 				valorBooleano: typeof valor === "boolean" ? valor : undefined,
 				valorNumerico: typeof valor === "number" ? valor : undefined,
-			});
-			await api.registro(dto);
-			await refetch();
+			}));
 		} catch {
 			Toast.show({ type: "error", text1: "Error al guardar el hábito" });
+		} finally {
+			await refetch();
 		}
 	};
 
@@ -70,9 +70,14 @@ export default function HabitosScreen() {
 					<Ionicons name="chevron-back" size={16} color="#0f172a" />
 					 /hábitos
 				</Boton>
-				<TouchableOpacity onPress={() => irAlInicio()} className="p-2">
-					<Ionicons name="settings-outline" size={20} color="#64748b" />
-				</TouchableOpacity>
+				<View className="flex-row gap-1">
+					<TouchableOpacity onPress={irAResumenHabitos} className="p-2">
+						<Ionicons name="bar-chart-outline" size={20} color="#64748b" />
+					</TouchableOpacity>
+					<TouchableOpacity onPress={irAAdministrarHabitos} className="p-2">
+						<Ionicons name="settings-outline" size={20} color="#64748b" />
+					</TouchableOpacity>
+				</View>
 			</Encabezado>
 
 			<View className="flex-row justify-between items-center py-2">
@@ -139,9 +144,14 @@ interface HabitoCeldaProps {
 
 function HabitoCelda({ habito, fecha, onRegistrar }: HabitoCeldaProps) {
 	const esNumerico = habito.tipo === TipoHabitoEnum._2;
+	const [marcado, setMarcado] = useState(habito.valorBooleano === true);
 	const [inputValor, setInputValor] = useState(
 		habito.valorNumerico != null ? String(habito.valorNumerico) : "",
 	);
+
+	useEffect(() => {
+		setMarcado(habito.valorBooleano === true);
+	}, [habito.valorBooleano]);
 
 	if (esNumerico) {
 		return (
@@ -170,8 +180,11 @@ function HabitoCelda({ habito, fecha, onRegistrar }: HabitoCeldaProps) {
 		<View className="flex-row items-center justify-between py-3 border-b border-gray-100 px-1">
 			<Text className="text-sm font-medium text-slate-900 flex-1">{habito.nombre}</Text>
 			<PuntoMarcador
-				marcado={habito.valorBooleano === true}
-				onClick={() => void onRegistrar(habito, !(habito.valorBooleano === true))}
+				marcado={marcado}
+				onClick={() => {
+					setMarcado((v) => !v);
+					void onRegistrar(habito, !marcado);
+				}}
 			/>
 		</View>
 	);

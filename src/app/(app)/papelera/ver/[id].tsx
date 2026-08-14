@@ -5,7 +5,7 @@ import { Boton } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import usarNavegacion from "@/usar-navegacion";
+import useNavegacion from "@/use-navegacion";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Text, View } from "react-native";
@@ -13,7 +13,7 @@ import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function VerEscritoPapelera() {
-	const { volverAPapelera, escritoId } = usarNavegacion();
+	const { volverAPapelera, escritoId } = useNavegacion();
 	const queryClient = useQueryClient();
 	const [eliminando, setEliminando] = useState(false);
 

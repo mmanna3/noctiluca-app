@@ -13,14 +13,13 @@ export default function Login() {
 	const [error, setError] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
-	const login = useAuth((s) => s.login);
 	const userName = useAuth((s) => s.userName);
 
 	const handleSubmit = async () => {
 		setError("");
 		setIsLoading(true);
 		try {
-			const success = await login("mana", password);
+			const success = await useAuth.getState().login("mana", password);
 			if (success) {
 				await registrarSesionTrasPassword(password, userName ?? "mana");
 				router.replace("/");

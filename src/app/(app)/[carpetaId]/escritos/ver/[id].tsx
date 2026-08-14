@@ -5,8 +5,8 @@ import { Boton } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { usarAutoguardado } from "@/hooks/usar-autoguardado";
-import usarNavegacion from "@/usar-navegacion";
+import { useAutoguardado } from "@/hooks/use-autoguardado";
+import useNavegacion from "@/use-navegacion";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Text, TextInput, View } from "react-native";
@@ -14,7 +14,7 @@ import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function VerEscrito() {
-	const { volverAEscritosHome, escritoId, carpetaId } = usarNavegacion();
+	const { volverAEscritosHome, escritoId, carpetaId } = useNavegacion();
 	const queryClient = useQueryClient();
 	const [eliminando, setEliminando] = useState(false);
 	const [titulo, setTitulo] = useState("");
@@ -35,7 +35,7 @@ export default function VerEscrito() {
 		}
 	}, [data, inicializado]);
 
-	const { flush } = usarAutoguardado(
+	const { flush } = useAutoguardado(
 		data ? { id: data.id, titulo: data.titulo ?? "", cuerpo: data.cuerpo ?? "", carpetaId: data.carpetaId } : undefined,
 		titulo,
 		cuerpo,

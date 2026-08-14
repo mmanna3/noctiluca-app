@@ -6,12 +6,12 @@ import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import ListaItem from "@/components/ui/lista-item";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import usarNavegacion from "@/usar-navegacion";
+import useNavegacion from "@/use-navegacion";
 import { FlatList, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function ModoLectura() {
-	const { irAlInicio, irAVerEscrito } = usarNavegacion();
+	const { irAlInicio, irAVerEscrito } = useNavegacion();
 
 	const { data, isLoading } = useApiQuery({
 		fn: () => api.escritoAll(),

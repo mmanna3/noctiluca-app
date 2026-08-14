@@ -7,7 +7,7 @@ import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import ListaItem from "@/components/ui/lista-item";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import usarNavegacion from "@/usar-navegacion";
+import useNavegacion from "@/use-navegacion";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
@@ -21,7 +21,7 @@ const subtituloCarpeta = (c: CarpetaDTO): string => {
 };
 
 export default function VerCarpeta() {
-	const { irAlInicio, irACarpeta, irANuevoEscrito, irAVerEscrito, carpetaId } = usarNavegacion();
+	const { irAlInicio, irACarpeta, irANuevoEscrito, irAVerEscrito, carpetaId } = useNavegacion();
 	const [eliminando, setEliminando] = useState(false);
 	const queryClient = useQueryClient();
 

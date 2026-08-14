@@ -16,7 +16,7 @@ interface EscritoEditable {
  * Autoguardado para el editor online: debouncea y persiste vía PUT al perder
  * foco de la app (AppState inactive/background) y al desmontarse el componente.
  */
-export const usarAutoguardado = (escrito: EscritoEditable | undefined, titulo: string, cuerpo: string) => {
+export const useAutoguardado = (escrito: EscritoEditable | undefined, titulo: string, cuerpo: string) => {
 	const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 	const primeraCarga = useRef(true);
 	const ultimoGuardado = useRef({ titulo: escrito?.titulo ?? "", cuerpo: escrito?.cuerpo ?? "" });

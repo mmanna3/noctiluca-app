@@ -12,37 +12,32 @@ import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function NuevaCarpeta() {
-	const { irAlInicio, irACarpeta, carpetaId } = useNavegacion();
+export default function NuevaSubcarpeta() {
+	const { irACarpeta, carpetaId } = useNavegacion();
 	const [titulo, setTitulo] = useState("");
 	const [creando, setCreando] = useState(false);
 	const queryClient = useQueryClient();
 
 	const carpetaPadreId = carpetaId ? Number(carpetaId) : undefined;
-	const esSubcarpeta = carpetaPadreId !== undefined;
 
-	const volverAlOrigen = () => {
-		if (esSubcarpeta && carpetaPadreId !== undefined) irACarpeta(carpetaPadreId);
-		else irAlInicio();
+	const volver = () => {
+		if (carpetaPadreId) irACarpeta(carpetaPadreId);
 	};
 
 	const crearYVolver = async () => {
 		if (creando) return;
 		if (titulo.trim() === "") {
-			volverAlOrigen();
+			volver();
 			return;
 		}
 		setCreando(true);
 		try {
 			await api.carpetaPOST(new CarpetaDTO({ titulo: titulo.trim(), carpetaPadreId }));
 			await Promise.all(clavesCarpetas.map((k) => queryClient.invalidateQueries({ queryKey: k })));
-			Toast.show({
-				type: "success",
-				text1: esSubcarpeta ? `Subcarpeta '${titulo}' creada` : `Carpeta '${titulo}' creada`,
-			});
-			volverAlOrigen();
+			Toast.show({ type: "success", text1: `Subcarpeta '${titulo}' creada` });
+			volver();
 		} catch {
-			Toast.show({ type: "error", text1: "Error al crear carpeta" });
+			Toast.show({ type: "error", text1: "Error al crear subcarpeta" });
 			setCreando(false);
 		}
 	};
@@ -52,14 +47,11 @@ export default function NuevaCarpeta() {
 			<Encabezado>
 				<Boton soloBorde onClick={crearYVolver} disabled={creando}>
 					<Ionicons name="chevron-back" size={16} color="#0f172a" />
-					{esSubcarpeta ? " Crear subcarpeta" : " Crear carpeta"}
+					Crear subcarpeta
 				</Boton>
 			</Encabezado>
 			<Cuerpo>
-				<Input
-					value={titulo}
-					onChange={setTitulo}
-				/>
+				<Input value={titulo} onChange={setTitulo} placeholder="Nombre" />
 			</Cuerpo>
 		</View>
 	);

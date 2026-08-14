@@ -7,7 +7,7 @@ import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import { Input } from "@/components/ui/input-ui";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import usarNavegacion from "@/usar-navegacion";
+import useNavegacion from "@/use-navegacion";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { TextInput, View } from "react-native";
@@ -15,7 +15,7 @@ import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function NuevoEscrito() {
-	const { volverAEscritosHome, irAVerEscrito, carpetaId } = usarNavegacion();
+	const { volverAEscritosHome, irAVerEscrito, carpetaId } = useNavegacion();
 	const [titulo, setTitulo] = useState("");
 	const [cuerpo, setCuerpo] = useState("");
 	const [creando, setCreando] = useState(false);

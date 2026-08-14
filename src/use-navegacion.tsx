@@ -1,6 +1,6 @@
 import { useRouter, usePathname, useLocalSearchParams } from "expo-router";
 
-const usarNavegacion = () => {
+const useNavegacion = () => {
 	const router = useRouter();
 	const pathname = usePathname();
 	const { carpetaId, id, listaId } = useLocalSearchParams<{
@@ -43,7 +43,10 @@ const usarNavegacion = () => {
 		irAListaObjetivos: (carpetaIdDestino: number, listaIdDestino: number) =>
 			router.push(`/${carpetaIdDestino}/lista-objetivos/${listaIdDestino}`),
 		irACarpetasPrivadas: () => router.replace("/carpetas-privadas"),
+		irAAdministrarHabitos: () => router.replace("/administrar-habitos"),
+		irABuscarEscritos: () => router.replace("/buscar-escritos"),
+		irAHistoricoObjetivos: (cId: number) => router.push(`/${cId}/historico-objetivos`),
 	};
 };
 
-export default usarNavegacion;
+export default useNavegacion;

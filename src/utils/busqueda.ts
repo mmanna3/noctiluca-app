@@ -1,0 +1,1 @@
+export const MINIMO_CARACTERES_BUSQUEDA = 2;

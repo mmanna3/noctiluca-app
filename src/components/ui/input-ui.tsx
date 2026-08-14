@@ -5,6 +5,7 @@ interface InputProps {
 	type?: "text" | "password" | "email" | "number";
 	value: string;
 	onChange: (value: string) => void;
+	placeholder?: string;
 	required?: boolean;
 	disabled?: boolean;
 	className?: string;
@@ -14,6 +15,7 @@ export const Input = ({
 	type = "text",
 	value,
 	onChange,
+	placeholder,
 	disabled = false,
 	className = "",
 }: InputProps) => {
@@ -21,6 +23,7 @@ export const Input = ({
 		<TextInput
 			value={value}
 			onChangeText={onChange}
+			placeholder={placeholder}
 			secureTextEntry={type === "password"}
 			keyboardType={type === "email" ? "email-address" : type === "number" ? "numeric" : "default"}
 			editable={!disabled}

@@ -2,11 +2,11 @@ import { useEstadoSync, recalcularEstado } from "@/sync/estado-sync";
 
 beforeEach(() => {
 	useEstadoSync.setState({
-		estado: "guardando",
+		estado: "guardado",
 		pendientes: 0,
 		online: true,
 		sincronizando: false,
-		syncInicialCompleto: false,
+		syncInicialCompleto: true,
 		ultimoError: undefined,
 	});
 });

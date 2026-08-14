@@ -24,16 +24,11 @@ const IndicadorSync = () => {
 	const pendientes = useEstadoSync((s) => s.pendientes);
 	const estado = useEstadoSync((s) => s.estado);
 	const sincronizando = useEstadoSync((s) => s.sincronizando);
-	const syncInicialCompleto = useEstadoSync((s) => s.syncInicialCompleto);
+	const solicitudesActivas = useEstadoSync((s) => s.solicitudesActivas);
+	const guardando = solicitudesActivas > 0 || sincronizando;
 
-	const etiqueta =
-		sincronizando || (!syncInicialCompleto && online)
-			? "Sincronizando…"
-			: textoGlobal[estado];
-	const claseTexto =
-		sincronizando || (!syncInicialCompleto && online)
-			? "text-gray-500"
-			: colorTexto(estado, online);
+	const etiqueta = guardando ? "Guardando…" : textoGlobal[estado];
+	const claseTexto = guardando ? "text-gray-500" : colorTexto(estado, online);
 
 	const alPresionar = () => {
 		if (!online) {
@@ -47,9 +42,9 @@ const IndicadorSync = () => {
 		<View className="flex-row justify-end w-full pt-3 pb-0">
 			<TouchableOpacity
 				onPress={alPresionar}
-				disabled={sincronizando}
+				disabled={guardando}
 				accessibilityLabel={`Estado de sincronización: ${etiqueta}. Tocá para sincronizar.`}
-				className={`flex-row items-center gap-1.5 ${sincronizando ? "opacity-80" : ""}`}
+				className={`flex-row items-center gap-1.5 ${guardando ? "opacity-80" : ""}`}
 			>
 				<Text className={`text-xs ${claseTexto}`}>{etiqueta}</Text>
 				{pendientes > 0 && (

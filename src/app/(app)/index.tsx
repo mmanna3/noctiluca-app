@@ -8,7 +8,8 @@ import Encabezado from "@/components/ui/encabezado";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import ListaItem from "@/components/ui/lista-item";
 import { useAuth } from "@/hooks/use-auth";
-import usarNavegacion from "@/usar-navegacion";
+import useNavegacion from "@/use-navegacion";
+import HabitTrackerHome from "@/pantallas/habitos/habit-tracker-home";
 import { FlatList, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -19,8 +20,7 @@ const subtituloCarpeta = (c: CarpetaDTO): string => {
 };
 
 export default function Inicio() {
-	const { irANuevaCarpeta, irALogin, irAPapelera, irAHabitos, verEscritosDeLaCarpeta } = usarNavegacion();
-	const logout = useAuth((s) => s.logout);
+	const { irANuevaCarpeta, irALogin, irAPapelera, irAHabitos, irABuscarEscritos, verEscritosDeLaCarpeta } = useNavegacion();
 
 	const { data, isLoading } = useApiQuery({
 		fn: () => api.carpetaAll(),
@@ -28,7 +28,7 @@ export default function Inicio() {
 	});
 
 	const cerrarSesion = () => {
-		logout();
+		useAuth.getState().logout();
 		irALogin();
 	};
 
@@ -57,6 +57,7 @@ export default function Inicio() {
 				</BotonIcono>
 			</Encabezado>
 			<Cuerpo className="flex-1">
+				<HabitTrackerHome onVerTodos={irAHabitos} />
 				<FlatList
 					data={carpetasRaiz}
 					keyExtractor={(item) => String(item.id ?? item.titulo)}
@@ -79,6 +80,9 @@ export default function Inicio() {
 					<Ionicons name="close" size={24} color="#0f172a" />
 				</Boton>
 				<View className="flex-row items-center gap-1">
+					<Boton soloBorde onClick={irABuscarEscritos}>
+						<Ionicons name="search-outline" size={20} color="#0f172a" />
+					</Boton>
 					<Boton soloBorde onClick={irAPapelera}>
 						<Ionicons name="trash-outline" size={20} color="#0f172a" />
 					</Boton>

@@ -9,10 +9,10 @@ interface IProps<TData, TTransformed = TData> {
 }
 
 const useApiQuery = <TData, TTransformed = TData>(props: IProps<TData, TTransformed>) => {
+	"use no memo";
 	return useQuery<TData, Error, TTransformed>({
 		enabled: props.activado,
 		queryKey: props.key,
-		throwOnError: true,
 		queryFn: async () => await props.fn(),
 		select: props.transformarResultado,
 	} as UseQueryOptions<TData, Error, TTransformed>);
