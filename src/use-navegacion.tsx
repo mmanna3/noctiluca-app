@@ -15,7 +15,7 @@ const useNavegacion = () => {
 		listaId,
 		irALogin: () => router.replace("/login"),
 		irAlInicio: () => router.replace("/"),
-		verEscritosDeLaCarpeta: (cId: number) => router.push(`/${cId}/escritos`),
+		verEscritosDeLaCarpeta: (cId: number | string) => router.push(`/${cId}/escritos`),
 		volverAEscritosHome: (carpetaIdDestino?: string | number) => {
 			const idCarpeta = carpetaIdDestino ?? carpetaId;
 			router.replace(`/${idCarpeta}/escritos`);
@@ -33,7 +33,7 @@ const useNavegacion = () => {
 			const idCarpeta = carpetaIdDestino ?? carpetaId;
 			router.push(`/${idCarpeta}/nuevo`);
 		},
-		irACarpeta: (cId: number) => router.push(`/${cId}/escritos`),
+		irACarpeta: (cId: number | string) => router.push(`/${cId}/escritos`),
 		irANuevaCarpeta: () => router.push("/nueva-carpeta"),
 		irANuevaSubcarpeta: () => router.push(`/${carpetaId}/nueva-subcarpeta`),
 		irAPapelera: () => router.push("/papelera"),

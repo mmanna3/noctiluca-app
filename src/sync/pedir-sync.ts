@@ -1,4 +1,6 @@
-/** Stub: el motor de sync se implementa en Phase 7 (expo-sqlite). */
+import { sincronizarPronto } from "./sync-engine";
+
+/** Dispara una sincronización manual (ej. botón del indicador de sync). */
 export const pedirSync = (): void => {
-	// no-op en la fase online-only
+	sincronizarPronto();
 };

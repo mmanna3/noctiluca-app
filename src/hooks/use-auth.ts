@@ -73,6 +73,8 @@ export const useAuth = create<AuthState>((set, get) => ({
 					userRole: decoded.role,
 					userName: decoded.name || usuario,
 				});
+				const { iniciarSync } = await import("../sync/sync-engine");
+				iniciarSync();
 				return true;
 			}
 			return false;

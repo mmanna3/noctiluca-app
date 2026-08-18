@@ -1,7 +1,4 @@
-import { api } from "@/api/api";
 import { CarpetaDTO } from "@/api/clients";
-import { queryKeys } from "@/api/query-keys";
-import useApiQuery from "@/api/custom-hooks/use-api-query";
 import { Boton, BotonIcono } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
@@ -10,6 +7,7 @@ import ListaItem from "@/components/ui/lista-item";
 import { useAuth } from "@/hooks/use-auth";
 import useNavegacion from "@/use-navegacion";
 import HabitTrackerHome from "@/pantallas/habitos/habit-tracker-home";
+import { useCarpetasRaiz } from "@/sync/lecturas";
 import { FlatList, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -22,17 +20,14 @@ const subtituloCarpeta = (c: CarpetaDTO): string => {
 export default function Inicio() {
 	const { irANuevaCarpeta, irALogin, irAPapelera, irAHabitos, irABuscarEscritos, verEscritosDeLaCarpeta } = useNavegacion();
 
-	const { data, isLoading } = useApiQuery({
-		fn: () => api.carpetaAll(),
-		key: queryKeys.carpetas,
-	});
+	const data = useCarpetasRaiz();
 
 	const cerrarSesion = () => {
 		useAuth.getState().logout();
 		irALogin();
 	};
 
-	if (isLoading) {
+	if (data === undefined) {
 		return (
 			<View className="flex-1 justify-center items-center gap-2">
 				<LoadingSpinner />
@@ -40,9 +35,7 @@ export default function Inicio() {
 		);
 	}
 
-	const carpetasRaiz = (data ?? []).filter(
-		(c) => c.carpetaPadreId === undefined || c.carpetaPadreId === null,
-	);
+	const carpetasRaiz = data;
 
 	return (
 		<View className="flex-1">
@@ -60,7 +53,7 @@ export default function Inicio() {
 				<HabitTrackerHome onVerTodos={irAHabitos} />
 				<FlatList
 					data={carpetasRaiz}
-					keyExtractor={(item) => String(item.id ?? item.titulo)}
+					keyExtractor={(item) => String(item.id ?? item.clientId ?? item.titulo)}
 					renderItem={({ item }) => (
 						<ListaItem
 							titulo={item.titulo ?? ""}
@@ -70,7 +63,10 @@ export default function Inicio() {
 									<Ionicons name="lock-closed" size={14} color="#9ca3af" />
 								) : undefined
 							}
-							onClick={() => item.id && verEscritosDeLaCarpeta(item.id)}
+							onClick={() => {
+								const destino = item.id ?? item.clientId;
+								if (destino !== undefined) verEscritosDeLaCarpeta(destino);
+							}}
 						/>
 					)}
 				/>

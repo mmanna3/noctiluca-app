@@ -1,42 +1,43 @@
-import { api } from "@/api/api";
-import { clavesEscritos, queryKeys } from "@/api/query-keys";
-import useApiQuery from "@/api/custom-hooks/use-api-query";
 import { Boton } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useAutoguardado } from "@/hooks/use-autoguardado";
 import useNavegacion from "@/use-navegacion";
-import { useQueryClient } from "@tanstack/react-query";
+import { useEscrito } from "@/sync/lecturas";
+import { cambiarPapeleraLocal } from "@/sync/repositorio-escritos";
 import { useEffect, useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, TextInput, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function VerEscrito() {
 	const { volverAEscritosHome, escritoId, carpetaId } = useNavegacion();
-	const queryClient = useQueryClient();
 	const [eliminando, setEliminando] = useState(false);
 	const [titulo, setTitulo] = useState("");
 	const [cuerpo, setCuerpo] = useState("");
-	const [inicializado, setInicializado] = useState<number | null>(null);
+	const [inicializado, setInicializado] = useState<string | null>(null);
 
-	const { data, isLoading } = useApiQuery({
-		fn: () => api.escritoGET(Number(escritoId)),
-		key: queryKeys.escrito(escritoId),
-		activado: !!escritoId,
-	});
+	const data = useEscrito(escritoId);
 
 	useEffect(() => {
-		if (data?.id && inicializado !== data.id) {
+		if (data?.clientId && inicializado !== data.clientId) {
 			setTitulo(data.titulo ?? "");
 			setCuerpo(data.cuerpo ?? "");
-			setInicializado(data.id);
+			setInicializado(data.clientId);
 		}
 	}, [data, inicializado]);
 
 	const { flush } = useAutoguardado(
-		data ? { id: data.id, titulo: data.titulo ?? "", cuerpo: data.cuerpo ?? "", carpetaId: data.carpetaId } : undefined,
+		data?.clientId
+			? {
+				clientId: data.clientId,
+				titulo: data.titulo ?? "",
+				cuerpo: data.cuerpo ?? "",
+				carpetaClientId: data.carpetaClientId,
+				carpetaId: data.carpetaId,
+			}
+			: undefined,
 		titulo,
 		cuerpo,
 	);
@@ -47,20 +48,14 @@ export default function VerEscrito() {
 	};
 
 	const eliminarYVolver = async () => {
-		if (!data?.id || eliminando) return;
+		if (!data?.clientId || eliminando) return;
 		setEliminando(true);
-		try {
-			await api.ponerEnPapelera(data.id);
-			await Promise.all(clavesEscritos.map((k) => queryClient.invalidateQueries({ queryKey: k })));
-			Toast.show({ type: "success", text1: `'${data.titulo}' al tacho` });
-			volverAEscritosHome();
-		} catch {
-			Toast.show({ type: "error", text1: "Error al eliminar" });
-			setEliminando(false);
-		}
+		await cambiarPapeleraLocal(data.clientId, true);
+		Toast.show({ type: "success", text1: `'${data.titulo}' al tacho` });
+		volverAEscritosHome();
 	};
 
-	if (isLoading) {
+	if (data === undefined) {
 		return (
 			<View className="flex-1 justify-center items-center">
 				<LoadingSpinner />
@@ -77,7 +72,7 @@ export default function VerEscrito() {
 	}
 
 	return (
-		<View className="flex-1">
+		<KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
 			<Encabezado>
 				<Boton soloBorde onClick={volver}>
 					<Ionicons name="chevron-back" size={16} color="#0f172a" />
@@ -107,6 +102,6 @@ export default function VerEscrito() {
 					className="flex-1 text-base text-slate-900"
 				/>
 			</Cuerpo>
-		</View>
+		</KeyboardAvoidingView>
 	);
 }

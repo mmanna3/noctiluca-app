@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { outboxDb } from "./db";
 import { EstadoGuardado } from "./tipos";
 
 interface EstadoSyncState {
@@ -20,11 +21,11 @@ interface EstadoSyncState {
 }
 
 export const useEstadoSync = create<EstadoSyncState>((set) => ({
-	estado: "guardado",
+	estado: "guardando",
 	pendientes: 0,
 	online: true,
 	sincronizando: false,
-	syncInicialCompleto: true,
+	syncInicialCompleto: false,
 	solicitudesActivas: 0,
 	setEstado: (estado) => set({ estado }),
 	setPendientes: (pendientes) => set({ pendientes }),
@@ -40,4 +41,13 @@ export const recalcularEstado = (pendientes: number, online: boolean): EstadoGua
 	if (pendientes === 0) return "guardado";
 	if (!online) return "sin-conexion";
 	return "guardando";
+};
+
+/** Relee el outbox y actualiza el contador/estado visible. */
+export const refrescarPendientes = async (): Promise<void> => {
+	const total = await outboxDb.contarActivas();
+	const store = useEstadoSync.getState();
+	store.setPendientes(total);
+	if (!store.syncInicialCompleto) return;
+	if (store.estado !== "error" || total === 0) store.setEstado(recalcularEstado(total, store.online));
 };

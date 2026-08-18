@@ -1,13 +1,11 @@
-import { api } from "@/api/api";
-import { HabitoTrackerItemDTO, TipoHabitoEnum, UpsertRegistroHabitoDTO } from "@/api/clients";
-import { queryKeys } from "@/api/query-keys";
-import useApiQuery from "@/api/custom-hooks/use-api-query";
+import { TipoHabitoEnum } from "@/api/clients";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import PuntoMarcador from "@/components/ui/punto-marcador";
-import { fechaCalendarioLocal } from "@/sync/fechas";
+import { useTrackerDia } from "@/sync/lecturas";
+import { TrackerHabitoView } from "@/sync/lecturas-core";
+import { guardarRegistroHabitoLocal } from "@/sync/repositorio-habitos";
 import { useEffect, useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
-import Toast from "react-native-toast-message";
 import { diasDeSemana, esMismaFecha, inicioDeSemana, nombreDiaCorto } from "./utilidades-habitos";
 
 interface Props {
@@ -20,27 +18,18 @@ export default function HabitTrackerHome({ onVerTodos }: Props) {
 	const [diaSeleccionado, setDiaSeleccionado] = useState(() => new Date());
 	const diasSemana = diasDeSemana(semanaReferencia);
 
-	const { data, isLoading, refetch } = useApiQuery({
-		fn: () => api.tracker(fechaCalendarioLocal(diaSeleccionado)),
-		key: [...queryKeys.habitosTracker, diaSeleccionado.toDateString()],
-	});
+	const data = useTrackerDia(diaSeleccionado);
+	const isLoading = data === undefined;
+	const habitos = data ?? [];
 
-	const habitos = data?.habitos ?? [];
-
-	const registrar = async (habito: HabitoTrackerItemDTO, valor: boolean | number) => {
-		if (!habito.id) return;
-		try {
-			await api.registro(new UpsertRegistroHabitoDTO({
-				habitoId: habito.id,
-				fecha: fechaCalendarioLocal(diaSeleccionado),
-				valorBooleano: typeof valor === "boolean" ? valor : undefined,
-				valorNumerico: typeof valor === "number" ? valor : undefined,
-			}));
-		} catch {
-			Toast.show({ type: "error", text1: "Error al guardar el hábito" });
-		} finally {
-			await refetch();
-		}
+	const registrar = (habito: TrackerHabitoView, valor: boolean | number) => {
+		void guardarRegistroHabitoLocal({
+			habitoClientId: habito.clientId,
+			habitoId: habito.id,
+			fecha: diaSeleccionado,
+			valorBooleano: typeof valor === "boolean" ? valor : undefined,
+			valorNumerico: typeof valor === "number" ? valor : undefined,
+		});
 	};
 
 	if (!habitos.length && !isLoading) return null;
@@ -74,7 +63,7 @@ export default function HabitTrackerHome({ onVerTodos }: Props) {
 				</View>
 			) : (
 				habitos.map((habito) => (
-					<HabitoCelda key={String(habito.id)} habito={habito} onRegistrar={registrar} />
+					<HabitoCelda key={habito.clientId} habito={habito} onRegistrar={registrar} />
 				))
 			)}
 
@@ -89,8 +78,8 @@ function HabitoCelda({
 	habito,
 	onRegistrar,
 }: {
-	habito: HabitoTrackerItemDTO;
-	onRegistrar: (h: HabitoTrackerItemDTO, v: boolean | number) => Promise<void>;
+	habito: TrackerHabitoView;
+	onRegistrar: (h: TrackerHabitoView, v: boolean | number) => void;
 }) {
 	const esNumerico = habito.tipo === TipoHabitoEnum._2;
 	const [marcado, setMarcado] = useState(habito.valorBooleano === true);
@@ -112,7 +101,7 @@ function HabitoCelda({
 						onChangeText={setInputValor}
 						onEndEditing={() => {
 							const val = parseInt(inputValor, 10);
-							if (!isNaN(val)) void onRegistrar(habito, val);
+							if (!isNaN(val)) onRegistrar(habito, val);
 						}}
 						keyboardType="numeric"
 						className="w-14 text-center border border-gray-200 rounded px-1 py-1 text-sm"
@@ -132,7 +121,7 @@ function HabitoCelda({
 				marcado={marcado}
 				onClick={() => {
 					setMarcado((v) => !v);
-					void onRegistrar(habito, !marcado);
+					onRegistrar(habito, !marcado);
 				}}
 			/>
 		</View>

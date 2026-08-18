@@ -1,57 +1,37 @@
-import { api } from "@/api/api";
-import { EscritoDTO } from "@/api/clients";
-import { clavesEscritos, queryKeys } from "@/api/query-keys";
-import useApiQuery from "@/api/custom-hooks/use-api-query";
 import { Boton } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import { Input } from "@/components/ui/input-ui";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import useNavegacion from "@/use-navegacion";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCarpeta } from "@/sync/lecturas";
+import { crearEscritoLocal } from "@/sync/repositorio-escritos";
 import { useState } from "react";
-import { TextInput, View } from "react-native";
-import Toast from "react-native-toast-message";
+import { KeyboardAvoidingView, Platform, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function NuevoEscrito() {
-	const { volverAEscritosHome, irAVerEscrito, carpetaId } = useNavegacion();
+	const { irAVerEscrito, carpetaId } = useNavegacion();
 	const [titulo, setTitulo] = useState("");
 	const [cuerpo, setCuerpo] = useState("");
 	const [creando, setCreando] = useState(false);
-	const queryClient = useQueryClient();
 
-	const { data: carpeta } = useApiQuery({
-		fn: () => api.carpetaGET(Number(carpetaId)),
-		key: queryKeys.carpeta(carpetaId),
-		activado: !!carpetaId,
-	});
+	const carpeta = useCarpeta(carpetaId);
 
 	const crearYAbrir = async () => {
 		if (!carpetaId || creando) return;
 		setCreando(true);
-		try {
-			const escrito = await api.escritoPOST(
-				new EscritoDTO({
-					titulo: titulo.trim() || "",
-					cuerpo,
-					carpetaId: Number(carpetaId),
-				}),
-			);
-			await Promise.all(clavesEscritos.map((k) => queryClient.invalidateQueries({ queryKey: k })));
-			if (escrito.id) {
-				irAVerEscrito(String(escrito.id), carpetaId);
-			} else {
-				volverAEscritosHome(carpetaId);
-			}
-		} catch {
-			Toast.show({ type: "error", text1: "Error al crear el escrito" });
-			setCreando(false);
-		}
+		const clientId = await crearEscritoLocal({
+			titulo: titulo.trim() || "",
+			cuerpo,
+			carpetaClientId: carpeta?.clientId,
+			carpetaId: carpeta?.id,
+		});
+		irAVerEscrito(clientId, carpetaId);
 	};
 
 	return (
-		<View className="flex-1">
+		<KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
 			<Encabezado>
 				<Boton soloBorde onClick={crearYAbrir} disabled={creando || !carpetaId}>
 					{creando ? (
@@ -78,6 +58,6 @@ export default function NuevoEscrito() {
 					/>
 				</View>
 			</Cuerpo>
-		</View>
+		</KeyboardAvoidingView>
 	);
 }

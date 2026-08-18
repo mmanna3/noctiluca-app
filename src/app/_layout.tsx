@@ -5,9 +5,8 @@ import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
-import NetInfo from "@react-native-community/netinfo";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { useEstadoSync } from "@/sync/estado-sync";
+import { iniciarSync } from "@/sync/sync-engine";
 import { useAuth } from "@/hooks/use-auth";
 import { useFonts, Merriweather_400Regular, Merriweather_700Bold } from "@expo-google-fonts/merriweather";
 
@@ -22,23 +21,20 @@ const queryClient = new QueryClient({
 	},
 });
 
-function NetInfoMonitor() {
-	const setOnline = useEstadoSync((s) => s.setOnline);
-
-	useEffect(() => {
-		const unsub = NetInfo.addEventListener((state) => {
-			setOnline(state.isConnected ?? false);
-		});
-		return unsub;
-	}, [setOnline]);
-
-	return null;
-}
-
 function AuthHydrator() {
 	useEffect(() => {
 		void useAuth.getState().hydrate();
 	}, []);
+
+	return null;
+}
+
+function SyncInitializer() {
+	const hydrated = useAuth((s) => s.hydrated);
+
+	useEffect(() => {
+		if (hydrated) iniciarSync();
+	}, [hydrated]);
 
 	return null;
 }
@@ -56,7 +52,7 @@ export default function RootLayout() {
 		<SafeAreaProvider>
 			<QueryClientProvider client={queryClient}>
 				<AuthHydrator />
-				<NetInfoMonitor />
+				<SyncInitializer />
 				<Stack screenOptions={{ headerShown: false, gestureEnabled: true }} />
 				<Toast />
 			</QueryClientProvider>

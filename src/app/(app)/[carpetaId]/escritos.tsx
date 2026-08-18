@@ -1,16 +1,14 @@
-import { api } from "@/api/api";
 import { CarpetaDTO } from "@/api/clients";
-import { clavesCarpetas, clavesEscritos, queryKeys } from "@/api/query-keys";
-import useApiQuery from "@/api/custom-hooks/use-api-query";
 import { Boton, BotonIcono } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import ListaItem from "@/components/ui/lista-item";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import useNavegacion from "@/use-navegacion";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCarpeta } from "@/sync/lecturas";
+import { eliminarCarpetaLocal } from "@/sync/repositorio-carpetas";
 import { useState } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -23,13 +21,8 @@ const subtituloCarpeta = (c: CarpetaDTO): string => {
 export default function VerCarpeta() {
 	const { irAlInicio, irACarpeta, irANuevoEscrito, irAVerEscrito, carpetaId } = useNavegacion();
 	const [eliminando, setEliminando] = useState(false);
-	const queryClient = useQueryClient();
 
-	const { data, isLoading } = useApiQuery({
-		fn: () => api.carpetaGET(Number(carpetaId)),
-		key: queryKeys.carpeta(carpetaId),
-		activado: !!carpetaId,
-	});
+	const data = useCarpeta(carpetaId);
 
 	const esSubcarpeta = data?.carpetaPadreId !== undefined && data?.carpetaPadreId !== null;
 
@@ -39,20 +32,14 @@ export default function VerCarpeta() {
 	};
 
 	const eliminarCarpeta = async () => {
-		if (!data?.id || eliminando) return;
+		if (!data?.clientId || eliminando) return;
 		setEliminando(true);
-		try {
-			await api.carpetaDELETE(data.id);
-			await Promise.all([...clavesCarpetas, ...clavesEscritos].map((k) => queryClient.invalidateQueries({ queryKey: k })));
-			Toast.show({ type: "success", text1: `Carpeta '${data.titulo}' eliminada` });
-			volver();
-		} catch {
-			Toast.show({ type: "error", text1: "Error al eliminar la carpeta" });
-			setEliminando(false);
-		}
+		await eliminarCarpetaLocal(data.clientId);
+		Toast.show({ type: "success", text1: `Carpeta '${data.titulo}' eliminada` });
+		volver();
 	};
 
-	if (isLoading) {
+	if (data === undefined) {
 		return (
 			<View className="flex-1 justify-center items-center">
 				<LoadingSpinner />
@@ -100,11 +87,12 @@ export default function VerCarpeta() {
 						renderItem={({ item: x }) => {
 							if (x.tipo === "carpeta") {
 								const c = x.item as CarpetaDTO;
+								const destino = c.id ?? c.clientId;
 								return (
 									<ListaItem
 										titulo={c.titulo ?? ""}
 										subtitulo={subtituloCarpeta(c)}
-										onClick={() => c.id && irACarpeta(c.id)}
+										onClick={() => destino !== undefined && irACarpeta(destino)}
 									/>
 								);
 							}

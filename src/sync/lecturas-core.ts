@@ -104,14 +104,17 @@ export const carpetasRaizDesde = (
 		.sort((a, b) => (a.posicion ?? 0) - (b.posicion ?? 0))
 		.map((c) => aCarpetaDTO(c, carpetas, escritos, false));
 
+/** Busca por id de servidor, o por clientId (GUID) si aún no fue sincronizada. */
 export const carpetaDesde = (
-	serverId: number | string | undefined,
+	idOClientId: number | string | undefined,
 	carpetas: CarpetaLocal[],
 	escritos: EscritoLocal[],
 ): CarpetaDTO | null => {
-	const id = Number(serverId);
-	if (!id) return null;
-	const carpeta = carpetas.find((c) => c.serverId === id);
+	if (idOClientId === undefined || idOClientId === null || idOClientId === "") return null;
+	const id = Number(idOClientId);
+	const carpeta = id
+		? carpetas.find((c) => c.serverId === id)
+		: carpetas.find((c) => c.clientId === idOClientId);
 	if (!carpeta) return null;
 	return aCarpetaDTO(carpeta, carpetas, escritos, true);
 };

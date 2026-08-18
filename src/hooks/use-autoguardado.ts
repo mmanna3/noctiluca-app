@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useRef } from "react";
 import { AppState } from "react-native";
-import { api } from "@/api/api";
-import { EscritoDTO } from "@/api/clients";
+import { guardarEscritoLocal } from "@/sync/repositorio-escritos";
 
 const DEBOUNCE_MS = 700;
 
 interface EscritoEditable {
-	id?: number;
+	clientId: string;
 	titulo?: string;
 	cuerpo?: string;
+	carpetaClientId?: string;
 	carpetaId?: number;
 }
 
 /**
- * Autoguardado para el editor online: debouncea y persiste vía PUT al perder
- * foco de la app (AppState inactive/background) y al desmontarse el componente.
+ * Autoguardado offline-first: debouncea y persiste en SQLite (y encola el
+ * upsert para el motor de sync) al perder foco de la app (AppState
+ * inactive/background) y al desmontarse el componente.
  */
 export const useAutoguardado = (escrito: EscritoEditable | undefined, titulo: string, cuerpo: string) => {
 	const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -22,14 +23,17 @@ export const useAutoguardado = (escrito: EscritoEditable | undefined, titulo: st
 	const ultimoGuardado = useRef({ titulo: escrito?.titulo ?? "", cuerpo: escrito?.cuerpo ?? "" });
 
 	const guardar = useCallback(async () => {
-		if (!escrito?.id) return;
+		if (!escrito?.clientId) return;
 		if (titulo === ultimoGuardado.current.titulo && cuerpo === ultimoGuardado.current.cuerpo) return;
 		ultimoGuardado.current = { titulo, cuerpo };
-		await api.escritoPUT(
-			escrito.id,
-			new EscritoDTO({ titulo, cuerpo, carpetaId: escrito.carpetaId }),
-		);
-	}, [escrito?.id, escrito?.carpetaId, titulo, cuerpo]);
+		await guardarEscritoLocal({
+			clientId: escrito.clientId,
+			titulo,
+			cuerpo,
+			carpetaClientId: escrito.carpetaClientId,
+			carpetaId: escrito.carpetaId,
+		});
+	}, [escrito?.clientId, escrito?.carpetaClientId, escrito?.carpetaId, titulo, cuerpo]);
 
 	const guardarRef = useRef(guardar);
 	useEffect(() => {
@@ -39,10 +43,10 @@ export const useAutoguardado = (escrito: EscritoEditable | undefined, titulo: st
 	useEffect(() => {
 		primeraCarga.current = true;
 		ultimoGuardado.current = { titulo: escrito?.titulo ?? "", cuerpo: escrito?.cuerpo ?? "" };
-	}, [escrito?.id]);
+	}, [escrito?.clientId]);
 
 	useEffect(() => {
-		if (!escrito?.id) return;
+		if (!escrito?.clientId) return;
 		if (primeraCarga.current) {
 			primeraCarga.current = false;
 			return;
@@ -50,7 +54,7 @@ export const useAutoguardado = (escrito: EscritoEditable | undefined, titulo: st
 		clearTimeout(timer.current);
 		timer.current = setTimeout(() => void guardarRef.current(), DEBOUNCE_MS);
 		return () => clearTimeout(timer.current);
-	}, [titulo, cuerpo, escrito?.id]);
+	}, [titulo, cuerpo, escrito?.clientId]);
 
 	useEffect(() => {
 		const flush = () => {

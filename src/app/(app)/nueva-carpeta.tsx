@@ -1,12 +1,10 @@
-import { api } from "@/api/api";
-import { CarpetaDTO } from "@/api/clients";
-import { clavesCarpetas } from "@/api/query-keys";
 import { Boton } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import { Input } from "@/components/ui/input-ui";
 import useNavegacion from "@/use-navegacion";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCarpeta } from "@/sync/lecturas";
+import { crearCarpetaLocal } from "@/sync/repositorio-carpetas";
 import { useState } from "react";
 import { View } from "react-native";
 import Toast from "react-native-toast-message";
@@ -16,13 +14,12 @@ export default function NuevaCarpeta() {
 	const { irAlInicio, irACarpeta, carpetaId } = useNavegacion();
 	const [titulo, setTitulo] = useState("");
 	const [creando, setCreando] = useState(false);
-	const queryClient = useQueryClient();
 
-	const carpetaPadreId = carpetaId ? Number(carpetaId) : undefined;
-	const esSubcarpeta = carpetaPadreId !== undefined;
+	const esSubcarpeta = !!carpetaId;
+	const padre = useCarpeta(carpetaId);
 
 	const volverAlOrigen = () => {
-		if (esSubcarpeta && carpetaPadreId !== undefined) irACarpeta(carpetaPadreId);
+		if (esSubcarpeta && carpetaId) irACarpeta(carpetaId);
 		else irAlInicio();
 	};
 
@@ -33,18 +30,16 @@ export default function NuevaCarpeta() {
 			return;
 		}
 		setCreando(true);
-		try {
-			await api.carpetaPOST(new CarpetaDTO({ titulo: titulo.trim(), carpetaPadreId }));
-			await Promise.all(clavesCarpetas.map((k) => queryClient.invalidateQueries({ queryKey: k })));
-			Toast.show({
-				type: "success",
-				text1: esSubcarpeta ? `Subcarpeta '${titulo}' creada` : `Carpeta '${titulo}' creada`,
-			});
-			volverAlOrigen();
-		} catch {
-			Toast.show({ type: "error", text1: "Error al crear carpeta" });
-			setCreando(false);
-		}
+		await crearCarpetaLocal({
+			titulo: titulo.trim(),
+			carpetaPadreId: padre?.id,
+			carpetaPadreClientId: padre?.clientId,
+		});
+		Toast.show({
+			type: "success",
+			text1: esSubcarpeta ? `Subcarpeta '${titulo}' creada` : `Carpeta '${titulo}' creada`,
+		});
+		volverAlOrigen();
 	};
 
 	return (
