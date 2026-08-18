@@ -8,7 +8,9 @@ import {
 	escritosDb,
 	guardarCursor,
 	habitosDb,
+	itemsObjetivoDb,
 	leerCursor,
+	listasObjetivoDb,
 	notificarCambio,
 	obtenerDeviceId,
 	outboxDb,
@@ -17,6 +19,7 @@ import {
 import { recalcularEstado, refrescarPendientes, useEstadoSync } from "./estado-sync";
 import { fechaCalendarioDesdeApi } from "./fechas";
 import { OperacionOutbox } from "./tipos";
+import { actualizarWidgetObjetivosHoy } from "./widget-objetivos-hoy";
 
 let enEjecucion = false;
 let pendienteDeCorrer = false;
@@ -43,6 +46,7 @@ export const sincronizar = async (): Promise<void> => {
 	try {
 		await push();
 		await pull();
+		void actualizarWidgetObjetivosHoy();
 		syncOk = true;
 		useEstadoSync.getState().setError(undefined);
 	} catch (error) {
@@ -143,6 +147,38 @@ const pull = async (): Promise<void> => {
 		});
 	}
 
+	for (const l of res.listasObjetivo ?? []) {
+		if (!l.clientId || l.tipo == null || !l.clavePeriodo) continue;
+		await listasObjetivoDb.put({
+			clientId: l.clientId,
+			serverId: l.id,
+			tipo: l.tipo,
+			clavePeriodo: l.clavePeriodo,
+			fechaInicio: l.fechaInicio?.toISOString?.(),
+			fechaFin: l.fechaFin?.toISOString?.(),
+			fechaCreacion: l.fechaCreacion?.toISOString?.(),
+			version: l.version ?? 0,
+		});
+	}
+
+	for (const i of res.itemsObjetivo ?? []) {
+		if (!i.clientId || i.listaTipo == null || !i.listaClavePeriodo) continue;
+		const local = await itemsObjetivoDb.porClientId(i.clientId);
+		if (local?.pendiente) continue;
+		await itemsObjetivoDb.put({
+			clientId: i.clientId,
+			serverId: i.id,
+			listaTipo: i.listaTipo,
+			listaClavePeriodo: i.listaClavePeriodo,
+			texto: i.texto ?? "",
+			completado: i.completado ?? false,
+			posicion: i.posicion ?? 0,
+			fechaCompletado: i.fechaCompletado?.toISOString?.(),
+			version: i.version ?? 0,
+			pendiente: false,
+		});
+	}
+
 	for (const t of res.eliminados ?? []) {
 		if (!t.clientId) continue;
 		if (t.tipoEntidad === "Escrito") await escritosDb.delete(t.clientId);
@@ -151,6 +187,7 @@ const pull = async (): Promise<void> => {
 			await habitosDb.delete(t.clientId);
 			await registrosHabitoDb.deletePorHabito(t.clientId);
 		}
+		if (t.tipoEntidad === "ItemObjetivo") await itemsObjetivoDb.delete(t.clientId);
 	}
 
 	if (res.cursor != null) await guardarCursor(res.cursor);
@@ -221,6 +258,12 @@ const confirmarLocal = async (op: OperacionOutbox, serverId?: number, version?: 
 		await registrosHabitoDb.put({ ...local, serverId: serverId ?? local.serverId, version: version ?? local.version, pendiente: false });
 		break;
 	}
+	case "itemObjetivo": {
+		const local = await itemsObjetivoDb.porClientId(op.clientEntityId);
+		if (!local) return;
+		await itemsObjetivoDb.put({ ...local, serverId: serverId ?? local.serverId, version: version ?? local.version, pendiente: false });
+		break;
+	}
 	default: {
 		const local = await escritosDb.porClientId(op.clientEntityId);
 		if (!local) return;
@@ -245,6 +288,11 @@ const marcarNoPendiente = async (op: OperacionOutbox): Promise<void> => {
 		const registros = await registrosHabitoDb.todos();
 		const local = registros.find((x) => x.clientId === op.clientEntityId);
 		if (local) await registrosHabitoDb.put({ ...local, pendiente: false });
+		break;
+	}
+	case "itemObjetivo": {
+		const local = await itemsObjetivoDb.porClientId(op.clientEntityId);
+		if (local) await itemsObjetivoDb.put({ ...local, pendiente: false });
 		break;
 	}
 	default: {

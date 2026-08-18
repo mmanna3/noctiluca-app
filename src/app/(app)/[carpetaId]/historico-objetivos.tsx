@@ -1,40 +1,28 @@
-import { api } from "@/api/api";
-import { HistoricoObjetivoDTO, TipoListaObjetivoEnum } from "@/api/clients";
-import { queryKeys } from "@/api/query-keys";
-import useApiQuery from "@/api/custom-hooks/use-api-query";
+import { TipoListaObjetivoEnum } from "@/api/clients";
 import { Boton } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import ListaItem from "@/components/ui/lista-item";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import useNavegacion from "@/use-navegacion";
-import { etiquetaPeriodo, inicioDeDiaLocal } from "@/utils/objetivos";
-import { propositoATipo } from "@/utils/objetivos";
+import { useCarpeta, useHistoricoObjetivos } from "@/sync/lecturas";
+import { HistoricoObjetivoResumen } from "@/sync/lecturas-core";
+import { etiquetaPeriodo, inicioDeDiaLocal, propositoATipo } from "@/utils/objetivos";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function HistoricoObjetivos() {
 	const { carpetaId, irACarpeta, irAListaObjetivos } = useNavegacion();
 
-	const { data: carpeta, isLoading: cargandoCarpeta } = useApiQuery({
-		fn: () => api.carpetaGET(Number(carpetaId)),
-		key: queryKeys.carpeta(carpetaId),
-		activado: !!carpetaId,
-	});
-
+	const carpeta = useCarpeta(carpetaId);
 	const tipo = propositoATipo(carpeta?.propositoCarpeta);
-
-	const { data, isLoading, isError } = useApiQuery({
-		key: [...queryKeys.objetivosHistorico(tipo ?? 0), 1],
-		fn: () => api.historico(tipo, 1, 50),
-		activado: tipo !== undefined,
-	});
+	const historico = useHistoricoObjetivos(tipo);
 
 	const volver = () => {
 		if (carpetaId) irACarpeta(Number(carpetaId));
 	};
 
-	if (cargandoCarpeta || isLoading) {
+	if (carpeta === undefined || historico === undefined) {
 		return (
 			<View className="flex-1 justify-center items-center">
 				<LoadingSpinner />
@@ -42,35 +30,17 @@ export default function HistoricoObjetivos() {
 		);
 	}
 
-	if (isError) {
-		return (
-			<View className="flex-1">
-				<Encabezado>
-					<Boton soloBorde onClick={volver}>
-						<Ionicons name="chevron-back" size={16} color="#0f172a" />
-						Histórico
-					</Boton>
-				</Encabezado>
-				<View className="flex-1 justify-center items-center">
-					<Text className="text-sm text-red-500">Error al cargar el histórico</Text>
-				</View>
-			</View>
-		);
-	}
-
-	const itemsBrutos = data?.items ?? [];
 	const hoy = inicioDeDiaLocal(new Date());
 	const items =
 		tipo === TipoListaObjetivoEnum._1
-			? itemsBrutos.filter((item) => {
+			? historico.filter((item) => {
 				if (!item.fechaInicio) return true;
-				const inicio = inicioDeDiaLocal(new Date(item.fechaInicio));
-				return inicio.getTime() <= hoy.getTime();
+				return inicioDeDiaLocal(item.fechaInicio).getTime() <= hoy.getTime();
 			})
-			: itemsBrutos;
+			: historico;
 
-	const subtitulo = (item: HistoricoObjetivoDTO) =>
-		`${item.cantidadCompletados ?? 0}/${item.cantidadItems ?? 0} completados`;
+	const subtitulo = (item: HistoricoObjetivoResumen) =>
+		`${item.cantidadCompletados}/${item.cantidadItems} completados`;
 
 	return (
 		<View className="flex-1">
@@ -90,10 +60,10 @@ export default function HistoricoObjetivos() {
 				) : (
 					items.map((item) => (
 						<ListaItem
-							key={item.id}
+							key={item.clientId ?? item.clavePeriodo}
 							titulo={etiquetaPeriodo(
 								item.tipo ?? tipo ?? TipoListaObjetivoEnum._1,
-								item.clavePeriodo ?? "",
+								item.clavePeriodo,
 								item.fechaInicio,
 								item.fechaFin,
 							)}

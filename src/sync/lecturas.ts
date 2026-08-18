@@ -1,9 +1,15 @@
-import { CarpetaDTO, EscritoDTO } from "@/api/clients";
-import { carpetasDb, escritosDb, habitosDb, registrosHabitoDb } from "./db";
+import { CarpetaDTO, EscritoDTO, ListaObjetivoDTO, TipoListaObjetivoEnum } from "@/api/clients";
+import { carpetasDb, escritosDb, habitosDb, itemsObjetivoDb, listasObjetivoDb, registrosHabitoDb } from "./db";
 import {
 	aEscritoDTO,
 	carpetaDesde,
 	carpetasRaizDesde,
+	DiaObjetivoFuturo,
+	diasObjetivosFuturosDesde,
+	HistoricoObjetivoResumen,
+	historicoObjetivosDesde,
+	listaObjetivosDesde,
+	listaObjetivosPorIdDesde,
 	TrackerHabitoView,
 	trackerDiaDesde,
 } from "./lecturas-core";
@@ -57,3 +63,34 @@ export const useTrackerDia = (fecha: Date): TrackerHabitoView[] | undefined =>
 		const [habitos, registros] = await Promise.all([habitosDb.todos(), registrosHabitoDb.todos()]);
 		return trackerDiaDesde(habitos, registros, fecha);
 	}, [fecha.getTime()]);
+
+/** Lista de objetivos por tipo (día/semana/mes) y clave de período. */
+export const useListaObjetivos = (
+	tipo: TipoListaObjetivoEnum | undefined,
+	clavePeriodo: string | undefined,
+): ListaObjetivoDTO | undefined =>
+	useLiveQuery(async () => {
+		if (tipo == null || !clavePeriodo) return undefined;
+		const [listas, items] = await Promise.all([listasObjetivoDb.todas(), itemsObjetivoDb.todos()]);
+		return listaObjetivosDesde(listas, items, tipo, clavePeriodo);
+	}, [tipo, clavePeriodo]);
+
+/** Lista de objetivos por id de servidor (vista histórica). */
+export const useListaObjetivosPorId = (listaId: number | undefined): ListaObjetivoDTO | undefined | null =>
+	useLiveQuery(async () => {
+		if (!listaId) return null;
+		const [listas, items] = await Promise.all([listasObjetivoDb.todas(), itemsObjetivoDb.todos()]);
+		return listaObjetivosPorIdDesde(listas, items, listaId);
+	}, [listaId]);
+
+/** Días futuros con al menos un objetivo planificado (offline-first). */
+export const useDiasObjetivosFuturos = (): DiaObjetivoFuturo[] | undefined =>
+	useLiveQuery(async () => diasObjetivosFuturosDesde(await itemsObjetivoDb.todos()), []);
+
+/** Histórico de períodos con objetivos para un tipo (día/semana/mes), offline-first. */
+export const useHistoricoObjetivos = (tipo: TipoListaObjetivoEnum | undefined): HistoricoObjetivoResumen[] | undefined =>
+	useLiveQuery(async () => {
+		if (tipo == null) return [];
+		const [listas, items] = await Promise.all([listasObjetivoDb.todas(), itemsObjetivoDb.todos()]);
+		return historicoObjetivosDesde(listas, items, tipo);
+	}, [tipo]);

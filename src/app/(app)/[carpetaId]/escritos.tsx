@@ -1,14 +1,17 @@
-import { CarpetaDTO } from "@/api/clients";
+import { CarpetaDTO, TipoListaObjetivoEnum } from "@/api/clients";
 import { Boton, BotonIcono } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import ListaItem from "@/components/ui/lista-item";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import EditorListaObjetivos from "@/pantallas/objetivos/editor-lista-objetivos";
+import PlanificacionObjetivosDia from "@/pantallas/objetivos/planificacion-objetivos-dia";
 import useNavegacion from "@/use-navegacion";
 import { useCarpeta } from "@/sync/lecturas";
 import { eliminarCarpetaLocal } from "@/sync/repositorio-carpetas";
+import { clavePeriodoActual, propositoATipo, tituloPeriodoActual } from "@/utils/objetivos";
 import { useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -19,17 +22,14 @@ const subtituloCarpeta = (c: CarpetaDTO): string => {
 };
 
 export default function VerCarpeta() {
-	const { irAlInicio, irACarpeta, irANuevoEscrito, irAVerEscrito, carpetaId } = useNavegacion();
+	const { irAlInicio, irACarpeta, irANuevoEscrito, irAVerEscrito, irAHistoricoObjetivos, carpetaId } = useNavegacion();
 	const [eliminando, setEliminando] = useState(false);
 
 	const data = useCarpeta(carpetaId);
 
-	const esSubcarpeta = data?.carpetaPadreId !== undefined && data?.carpetaPadreId !== null;
-
-	const volver = () => {
-		if (esSubcarpeta && data?.carpetaPadreId) irACarpeta(data.carpetaPadreId);
-		else irAlInicio();
-	};
+	// irAlInicio hace pop (router.back()) a la pantalla anterior, sea la
+	// carpeta padre o Inicio, según de dónde vino el usuario.
+	const volver = irAlInicio;
 
 	const eliminarCarpeta = async () => {
 		if (!data?.clientId || eliminando) return;
@@ -43,6 +43,31 @@ export default function VerCarpeta() {
 		return (
 			<View className="flex-1 justify-center items-center">
 				<LoadingSpinner />
+			</View>
+		);
+	}
+
+	const tipoObjetivo = propositoATipo(data?.propositoCarpeta);
+	if (tipoObjetivo !== undefined && carpetaId) {
+		const esObjetivosDia = tipoObjetivo === TipoListaObjetivoEnum._1;
+		const claveActual = clavePeriodoActual(tipoObjetivo);
+		const tituloActual = esObjetivosDia ? "Hoy" : tituloPeriodoActual(tipoObjetivo);
+
+		return (
+			<View className="flex-1">
+				<Encabezado>
+					<Boton soloBorde onClick={volver}>
+						<Ionicons name="chevron-back" size={16} color="#0f172a" />
+						/{data?.titulo ?? "objetivos"}
+					</Boton>
+				</Encabezado>
+				<Cuerpo className="flex-1">
+					<EditorListaObjetivos tipo={tipoObjetivo} clavePeriodo={claveActual} titulo={tituloActual} />
+					{esObjetivosDia && <PlanificacionObjetivosDia />}
+					<TouchableOpacity onPress={() => irAHistoricoObjetivos(Number(carpetaId))}>
+						<Text className="text-xs text-gray-500 uppercase tracking-wide">Ver histórico →</Text>
+					</TouchableOpacity>
+				</Cuerpo>
 			</View>
 		);
 	}

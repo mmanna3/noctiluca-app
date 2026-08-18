@@ -230,6 +230,54 @@ export const listaObjetivosPorIdDesde = (
 export const claveDeItem = (item: ItemObjetivoDTO): string =>
 	item.clientId ?? String(item.id ?? "");
 
+export interface HistoricoObjetivoResumen {
+	id?: number;
+	clientId?: string;
+	tipo: number;
+	clavePeriodo: string;
+	fechaInicio?: Date;
+	fechaFin?: Date;
+	cantidadCompletados: number;
+	cantidadItems: number;
+}
+
+/**
+ * Histórico de períodos con objetivos, derivado 100% de datos locales (a
+ * diferencia de `noctiluca-fe`, que pide `api.historico` online): se agrupa
+ * por `listaClavePeriodo` sobre los ítems directamente, no sobre las listas,
+ * porque una lista recién creada offline puede no tener fila local todavía
+ * (se crea del lado del servidor recién con el primer ítem sincronizado).
+ */
+export const historicoObjetivosDesde = (
+	listas: ListaObjetivoLocal[],
+	items: ItemObjetivoLocal[],
+	tipo: number,
+): HistoricoObjetivoResumen[] => {
+	const porClave = new Map<string, ItemObjetivoLocal[]>();
+	for (const item of items) {
+		if (item.listaTipo !== tipo) continue;
+		const itemsDeClave = porClave.get(item.listaClavePeriodo) ?? [];
+		itemsDeClave.push(item);
+		porClave.set(item.listaClavePeriodo, itemsDeClave);
+	}
+
+	return [...porClave.entries()]
+		.map(([clavePeriodo, itemsLista]) => {
+			const lista = listas.find((l) => l.tipo === tipo && l.clavePeriodo === clavePeriodo);
+			return {
+				id: lista?.serverId,
+				clientId: lista?.clientId,
+				tipo,
+				clavePeriodo,
+				fechaInicio: lista?.fechaInicio ? new Date(lista.fechaInicio) : undefined,
+				fechaFin: lista?.fechaFin ? new Date(lista.fechaFin) : undefined,
+				cantidadCompletados: itemsLista.filter((i) => i.completado).length,
+				cantidadItems: itemsLista.length,
+			};
+		})
+		.sort((a, b) => b.clavePeriodo.localeCompare(a.clavePeriodo));
+};
+
 export interface DiaObjetivoFuturo {
 	clavePeriodo: string;
 	fecha: Date;

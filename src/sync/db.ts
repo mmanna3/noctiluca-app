@@ -4,6 +4,8 @@ import {
 	CarpetaLocal,
 	EscritoLocal,
 	HabitoLocal,
+	ItemObjetivoLocal,
+	ListaObjetivoLocal,
 	OperacionOutbox,
 	RegistroHabitoLocal,
 } from "./tipos";
@@ -80,6 +82,28 @@ const ESQUEMA = `
 		payload TEXT NOT NULL,
 		intentos INTEGER NOT NULL DEFAULT 0,
 		muerta INTEGER DEFAULT 0
+	);
+	CREATE TABLE IF NOT EXISTS listasObjetivo (
+		clientId TEXT PRIMARY KEY,
+		serverId INTEGER,
+		tipo INTEGER NOT NULL,
+		clavePeriodo TEXT NOT NULL,
+		fechaInicio TEXT,
+		fechaFin TEXT,
+		fechaCreacion TEXT,
+		version INTEGER NOT NULL DEFAULT 0
+	);
+	CREATE TABLE IF NOT EXISTS itemsObjetivo (
+		clientId TEXT PRIMARY KEY,
+		serverId INTEGER,
+		listaTipo INTEGER NOT NULL,
+		listaClavePeriodo TEXT NOT NULL,
+		texto TEXT NOT NULL,
+		completado INTEGER DEFAULT 0,
+		posicion INTEGER NOT NULL DEFAULT 0,
+		fechaCompletado TEXT,
+		version INTEGER NOT NULL DEFAULT 0,
+		pendiente INTEGER DEFAULT 0
 	);
 	CREATE TABLE IF NOT EXISTS meta (
 		clave TEXT PRIMARY KEY,
@@ -413,6 +437,130 @@ export const registrosHabitoDb = {
 	deletePorHabito: async (habitoClientId: string): Promise<void> => {
 		const db = await obtenerDb();
 		await db.runAsync("DELETE FROM registrosHabito WHERE habitoClientId = ?", habitoClientId);
+		notificarCambio();
+	},
+};
+
+interface ListaObjetivoRow {
+	clientId: string;
+	serverId: number | null;
+	tipo: number;
+	clavePeriodo: string;
+	fechaInicio: string | null;
+	fechaFin: string | null;
+	fechaCreacion: string | null;
+	version: number;
+}
+
+const listaObjetivoDesdeRow = (r: ListaObjetivoRow): ListaObjetivoLocal => ({
+	clientId: r.clientId,
+	serverId: r.serverId ?? undefined,
+	tipo: r.tipo,
+	clavePeriodo: r.clavePeriodo,
+	fechaInicio: r.fechaInicio ?? undefined,
+	fechaFin: r.fechaFin ?? undefined,
+	fechaCreacion: r.fechaCreacion ?? undefined,
+	version: r.version,
+});
+
+export const listasObjetivoDb = {
+	todas: async (): Promise<ListaObjetivoLocal[]> => {
+		const db = await obtenerDb();
+		return (await db.getAllAsync<ListaObjetivoRow>("SELECT * FROM listasObjetivo")).map(listaObjetivoDesdeRow);
+	},
+	put: async (l: ListaObjetivoLocal): Promise<void> => {
+		const db = await obtenerDb();
+		await db.runAsync(
+			`INSERT INTO listasObjetivo (clientId, serverId, tipo, clavePeriodo, fechaInicio, fechaFin, fechaCreacion, version)
+			 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+			 ON CONFLICT(clientId) DO UPDATE SET
+				serverId = excluded.serverId,
+				tipo = excluded.tipo,
+				clavePeriodo = excluded.clavePeriodo,
+				fechaInicio = excluded.fechaInicio,
+				fechaFin = excluded.fechaFin,
+				fechaCreacion = excluded.fechaCreacion,
+				version = excluded.version`,
+			l.clientId,
+			l.serverId ?? null,
+			l.tipo,
+			l.clavePeriodo,
+			l.fechaInicio ?? null,
+			l.fechaFin ?? null,
+			l.fechaCreacion ?? null,
+			l.version,
+		);
+		notificarCambio();
+	},
+};
+
+interface ItemObjetivoRow {
+	clientId: string;
+	serverId: number | null;
+	listaTipo: number;
+	listaClavePeriodo: string;
+	texto: string;
+	completado: number | null;
+	posicion: number;
+	fechaCompletado: string | null;
+	version: number;
+	pendiente: number | null;
+}
+
+const itemObjetivoDesdeRow = (r: ItemObjetivoRow): ItemObjetivoLocal => ({
+	clientId: r.clientId,
+	serverId: r.serverId ?? undefined,
+	listaTipo: r.listaTipo,
+	listaClavePeriodo: r.listaClavePeriodo,
+	texto: r.texto,
+	completado: bool(r.completado) ?? false,
+	posicion: r.posicion,
+	fechaCompletado: r.fechaCompletado ?? undefined,
+	version: r.version,
+	pendiente: bool(r.pendiente),
+});
+
+export const itemsObjetivoDb = {
+	todos: async (): Promise<ItemObjetivoLocal[]> => {
+		const db = await obtenerDb();
+		return (await db.getAllAsync<ItemObjetivoRow>("SELECT * FROM itemsObjetivo")).map(itemObjetivoDesdeRow);
+	},
+	porClientId: async (clientId: string): Promise<ItemObjetivoLocal | undefined> => {
+		const db = await obtenerDb();
+		const fila = await db.getFirstAsync<ItemObjetivoRow>("SELECT * FROM itemsObjetivo WHERE clientId = ?", clientId);
+		return fila ? itemObjetivoDesdeRow(fila) : undefined;
+	},
+	put: async (i: ItemObjetivoLocal): Promise<void> => {
+		const db = await obtenerDb();
+		await db.runAsync(
+			`INSERT INTO itemsObjetivo (clientId, serverId, listaTipo, listaClavePeriodo, texto, completado, posicion, fechaCompletado, version, pendiente)
+			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			 ON CONFLICT(clientId) DO UPDATE SET
+				serverId = excluded.serverId,
+				listaTipo = excluded.listaTipo,
+				listaClavePeriodo = excluded.listaClavePeriodo,
+				texto = excluded.texto,
+				completado = excluded.completado,
+				posicion = excluded.posicion,
+				fechaCompletado = excluded.fechaCompletado,
+				version = excluded.version,
+				pendiente = excluded.pendiente`,
+			i.clientId,
+			i.serverId ?? null,
+			i.listaTipo,
+			i.listaClavePeriodo,
+			i.texto,
+			aInt(i.completado),
+			i.posicion,
+			i.fechaCompletado ?? null,
+			i.version,
+			aInt(i.pendiente),
+		);
+		notificarCambio();
+	},
+	delete: async (clientId: string): Promise<void> => {
+		const db = await obtenerDb();
+		await db.runAsync("DELETE FROM itemsObjetivo WHERE clientId = ?", clientId);
 		notificarCambio();
 	},
 };

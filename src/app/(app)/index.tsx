@@ -1,4 +1,4 @@
-import { CarpetaDTO } from "@/api/clients";
+import { CarpetaDTO, TipoListaObjetivoEnum } from "@/api/clients";
 import { Boton, BotonIcono } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
@@ -7,7 +7,9 @@ import ListaItem from "@/components/ui/lista-item";
 import { useAuth } from "@/hooks/use-auth";
 import useNavegacion from "@/use-navegacion";
 import HabitTrackerHome from "@/pantallas/habitos/habit-tracker-home";
+import EditorListaObjetivos from "@/pantallas/objetivos/editor-lista-objetivos";
 import { useCarpetasRaiz } from "@/sync/lecturas";
+import { claveDia } from "@/utils/objetivos";
 import { FlatList, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -50,6 +52,7 @@ export default function Inicio() {
 				</BotonIcono>
 			</Encabezado>
 			<Cuerpo className="flex-1">
+				<EditorListaObjetivos tipo={TipoListaObjetivoEnum._1} clavePeriodo={claveDia(new Date())} />
 				<HabitTrackerHome onVerTodos={irAHabitos} />
 				<FlatList
 					data={carpetasRaiz}

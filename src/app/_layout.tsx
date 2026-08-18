@@ -5,6 +5,7 @@ import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { iniciarSync } from "@/sync/sync-engine";
 import { useAuth } from "@/hooks/use-auth";
@@ -49,13 +50,15 @@ export default function RootLayout() {
 	if (!fontsLoaded) return null;
 
 	return (
-		<SafeAreaProvider>
-			<QueryClientProvider client={queryClient}>
-				<AuthHydrator />
-				<SyncInitializer />
-				<Stack screenOptions={{ headerShown: false, gestureEnabled: true }} />
-				<Toast />
-			</QueryClientProvider>
-		</SafeAreaProvider>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<SafeAreaProvider>
+				<QueryClientProvider client={queryClient}>
+					<AuthHydrator />
+					<SyncInitializer />
+					<Stack screenOptions={{ headerShown: false, gestureEnabled: true }} />
+					<Toast />
+				</QueryClientProvider>
+			</SafeAreaProvider>
+		</GestureHandlerRootView>
 	);
 }

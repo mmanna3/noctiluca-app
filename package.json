@@ -1,8 +1,9 @@
 {
   "name": "noctiluca-app",
-  "main": "expo-router/entry",
+  "main": "./index.js",
   "version": "1.0.0",
   "dependencies": {
+    "@bacons/apple-targets": "^5.0.0",
     "@expo-google-fonts/merriweather": "^0.4.2",
     "@expo/ui": "~57.0.10",
     "@expo/vector-icons": "^15.0.2",
@@ -59,7 +60,8 @@
   },
   "scripts": {
     "start": "expo start",
-    "ios": "expo start --ios",
+    "ios": "expo run:ios --device \"iPhone 16 Pro\"",
+    "fresco": "expo prebuild -p ios --clean && expo run:ios --device \"iPhone 16 Pro\"",
     "web": "expo start --web",
     "build:web": "npx expo export --platform web",
     "compilar:iphone": "eas build --platform ios --profile internal",

@@ -9,16 +9,29 @@ const useNavegacion = () => {
 		listaId?: string;
 	}>();
 
+	/**
+	 * "Volver" real: hace pop de la pantalla actual (lo mismo que el gesto de
+	 * swipe-back de iOS), en vez de reemplazarla por una instancia nueva de la
+	 * pantalla de origen. Usar `replace` acá duplicaba entradas en el historial
+	 * nativo y hacía que el gesto pareciera no hacer nada (volvía a una
+	 * pantalla idéntica en vez de a la de abajo). Solo cae a `rutaSiNoHayHistorial`
+	 * si la pantalla se abrió sin historial previo (ej. deep link directo).
+	 */
+	const volver = (rutaSiNoHayHistorial: Parameters<typeof router.replace>[0]) => {
+		if (router.canGoBack()) router.back();
+		else router.replace(rutaSiNoHayHistorial);
+	};
+
 	return {
 		escritoId: id,
 		carpetaId: carpetaId,
 		listaId,
 		irALogin: () => router.replace("/login"),
-		irAlInicio: () => router.replace("/"),
+		irAlInicio: () => volver("/"),
 		verEscritosDeLaCarpeta: (cId: number | string) => router.push(`/${cId}/escritos`),
 		volverAEscritosHome: (carpetaIdDestino?: string | number) => {
 			const idCarpeta = carpetaIdDestino ?? carpetaId;
-			router.replace(`/${idCarpeta}/escritos`);
+			volver(`/${idCarpeta}/escritos`);
 		},
 		irAVerEscrito: (escritoId: string, carpetaIdOverride?: string | number) => {
 			const idCarpeta = carpetaIdOverride ?? carpetaId;
@@ -28,7 +41,7 @@ const useNavegacion = () => {
 				router.push(`/${idCarpeta}/escritos/ver/${escritoId}`);
 			}
 		},
-		volverAPapelera: () => router.replace("/papelera"),
+		volverAPapelera: () => volver("/papelera"),
 		irANuevoEscrito: (carpetaIdDestino?: string | number) => {
 			const idCarpeta = carpetaIdDestino ?? carpetaId;
 			router.push(`/${idCarpeta}/nuevo`);
