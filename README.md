@@ -25,6 +25,25 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
+## Instalar en tu iPhone (build interno, sin App Store)
+
+```bash
+npm run compilar:iphone
+```
+
+Esto corre `eas build --platform ios --profile internal` y tarda ~10-15 min en la nube de EAS.
+
+1. EAS manda un email con un link de descarga + un QR (también aparece en la terminal y en expo.dev).
+2. Abrí ese link desde **Safari en el iPhone** (no Chrome — si no, no instala).
+3. Tocá "Instalar" → la app aparece en la pantalla de inicio.
+4. En el iPhone: **Configuración → General → VPN y gestión de dispositivo → Confiar** en el certificado del desarrollador (si no, la app da error al abrir).
+
+Prerrequisitos (una sola vez):
+
+- `eas login` con la cuenta de expo.dev.
+- El dispositivo registrado en el perfil de Apple Developer (`eas device:create` la primera vez con ese iPhone).
+- Certificados de Apple guardados en EAS — si no existen, el primer build los pide automáticamente.
+
 ## Get a fresh project
 
 When you're ready, run:
