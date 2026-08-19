@@ -11,7 +11,7 @@ import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function NuevaCarpeta() {
-	const { irAlInicio, irACarpeta, carpetaId } = useNavegacion();
+	const { irAlInicio, volver: volverNav, carpetaId } = useNavegacion();
 	const [titulo, setTitulo] = useState("");
 	const [creando, setCreando] = useState(false);
 
@@ -19,7 +19,7 @@ export default function NuevaCarpeta() {
 	const padre = useCarpeta(carpetaId);
 
 	const volverAlOrigen = () => {
-		if (esSubcarpeta && carpetaId) irACarpeta(carpetaId);
+		if (esSubcarpeta && carpetaId) volverNav(`/${carpetaId}/escritos`);
 		else irAlInicio();
 	};
 

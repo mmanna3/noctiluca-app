@@ -7,7 +7,7 @@ import useNavegacion from "@/use-navegacion";
 import { useCarpeta } from "@/sync/lecturas";
 import { crearEscritoLocal } from "@/sync/repositorio-escritos";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, TextInput, View } from "react-native";
+import { ScrollView, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function NuevoEscrito() {
@@ -31,7 +31,12 @@ export default function NuevoEscrito() {
 	};
 
 	return (
-		<KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+		<ScrollView
+			style={{ flex: 1 }}
+			contentContainerStyle={{ flexGrow: 1 }}
+			keyboardShouldPersistTaps="handled"
+			automaticallyAdjustKeyboardInsets
+		>
 			<Encabezado>
 				<Boton soloBorde onClick={crearYAbrir} disabled={creando || !carpetaId}>
 					{creando ? (
@@ -58,6 +63,6 @@ export default function NuevoEscrito() {
 					/>
 				</View>
 			</Cuerpo>
-		</KeyboardAvoidingView>
+		</ScrollView>
 	);
 }

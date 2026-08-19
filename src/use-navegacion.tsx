@@ -28,6 +28,7 @@ const useNavegacion = () => {
 		listaId,
 		irALogin: () => router.replace("/login"),
 		irAlInicio: () => volver("/"),
+		volver,
 		verEscritosDeLaCarpeta: (cId: number | string) => router.push(`/${cId}/escritos`),
 		volverAEscritosHome: (carpetaIdDestino?: string | number) => {
 			const idCarpeta = carpetaIdDestino ?? carpetaId;

@@ -7,7 +7,7 @@ import useNavegacion from "@/use-navegacion";
 import { useEscrito } from "@/sync/lecturas";
 import { cambiarPapeleraLocal } from "@/sync/repositorio-escritos";
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, Text, TextInput, View } from "react-native";
+import { ScrollView, Text, TextInput, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -72,7 +72,12 @@ export default function VerEscrito() {
 	}
 
 	return (
-		<KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+		<ScrollView
+			style={{ flex: 1 }}
+			contentContainerStyle={{ flexGrow: 1 }}
+			keyboardShouldPersistTaps="handled"
+			automaticallyAdjustKeyboardInsets
+		>
 			<Encabezado>
 				<Boton soloBorde onClick={volver}>
 					<Ionicons name="chevron-back" size={16} color="#0f172a" />
@@ -102,6 +107,6 @@ export default function VerEscrito() {
 					className="flex-1 text-base text-slate-900"
 				/>
 			</Cuerpo>
-		</KeyboardAvoidingView>
+		</ScrollView>
 	);
 }

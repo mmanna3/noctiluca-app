@@ -12,14 +12,14 @@ import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function HistoricoObjetivos() {
-	const { carpetaId, irACarpeta, irAListaObjetivos } = useNavegacion();
+	const { carpetaId, volver: volverNav, irAListaObjetivos } = useNavegacion();
 
 	const carpeta = useCarpeta(carpetaId);
 	const tipo = propositoATipo(carpeta?.propositoCarpeta);
 	const historico = useHistoricoObjetivos(tipo);
 
 	const volver = () => {
-		if (carpetaId) irACarpeta(Number(carpetaId));
+		if (carpetaId) volverNav(`/${carpetaId}/escritos`);
 	};
 
 	if (carpeta === undefined || historico === undefined) {

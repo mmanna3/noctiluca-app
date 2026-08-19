@@ -11,14 +11,14 @@ import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function NuevaSubcarpeta() {
-	const { irACarpeta, carpetaId } = useNavegacion();
+	const { volver: volverNav, carpetaId } = useNavegacion();
 	const [titulo, setTitulo] = useState("");
 	const [creando, setCreando] = useState(false);
 
 	const padre = useCarpeta(carpetaId);
 
 	const volver = () => {
-		if (carpetaId) irACarpeta(carpetaId);
+		if (carpetaId) volverNav(`/${carpetaId}/escritos`);
 	};
 
 	const crearYVolver = async () => {
