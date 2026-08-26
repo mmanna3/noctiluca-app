@@ -20,6 +20,9 @@ interface Props {
 	tipo: TipoListaObjetivoEnum;
 	clavePeriodo: string;
 	titulo?: string;
+	/** Si se pasa, solo se muestran los primeros N ítems y aparece un link "Ver todos". */
+	maxVisibles?: number;
+	onVerTodos?: () => void;
 }
 
 /**
@@ -27,12 +30,14 @@ interface Props {
  * Puerto RN de `noctiluca-fe/src/pantallas/objetivos/editor-lista-objetivos.tsx`:
  * sin drag-and-drop (dnd-kit es web-only) — reordenar es con botones ↑/↓.
  */
-export default function EditorListaObjetivos({ tipo, clavePeriodo, titulo }: Props) {
+export default function EditorListaObjetivos({ tipo, clavePeriodo, titulo, maxVisibles, onVerTodos }: Props) {
 	const data = useListaObjetivos(tipo, clavePeriodo);
 	const [nuevoTexto, setNuevoTexto] = useState("");
 	const [creando, setCreando] = useState(false);
 
 	const items = data?.items ?? [];
+	const itemsVisibles = maxVisibles !== undefined ? items.slice(0, maxVisibles) : items;
+	const hayMas = maxVisibles !== undefined && items.length > maxVisibles;
 	const soloLecturaCompletado = tipo === TipoListaObjetivoEnum._1 && esClaveDiaFutura(clavePeriodo);
 
 	const agregar = async () => {
@@ -59,7 +64,7 @@ export default function EditorListaObjetivos({ tipo, clavePeriodo, titulo }: Pro
 					<LoadingSpinner />
 				</View>
 			) : (
-				items.map((item, indice) => (
+				itemsVisibles.map((item, indice) => (
 					<FilaObjetivo
 						key={claveDeItem(item)}
 						item={item}
@@ -70,6 +75,11 @@ export default function EditorListaObjetivos({ tipo, clavePeriodo, titulo }: Pro
 						onBajar={() => void moverItem(indice, 1)}
 					/>
 				))
+			)}
+			{hayMas && (
+				<TouchableOpacity onPress={onVerTodos} className="mt-2">
+					<Text className="text-xs text-gray-400 text-right">Ver todos ({items.length}) →</Text>
+				</TouchableOpacity>
 			)}
 			<View className="flex-row items-center gap-2 mt-2">
 				<View className="flex-1">

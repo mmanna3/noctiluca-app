@@ -95,6 +95,15 @@ export const aCarpetaDTO = (
 	});
 };
 
+/** Busca la carpeta de sistema con un propósito dado (ej. objetivos del día/semana/mes). */
+export const carpetaPorPropositoDesde = (
+	carpetas: CarpetaLocal[],
+	proposito: number,
+): number | string | undefined => {
+	const carpeta = carpetas.find((c) => c.propositoCarpeta === proposito);
+	return carpeta?.serverId ?? carpeta?.clientId;
+};
+
 export const carpetasRaizDesde = (
 	carpetas: CarpetaLocal[],
 	escritos: EscritoLocal[],

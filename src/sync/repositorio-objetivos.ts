@@ -4,6 +4,7 @@ import { compactar } from "./outbox";
 import { sincronizarPronto } from "./sync-engine";
 import { ItemObjetivoLocal, OperacionOutbox } from "./tipos";
 import { actualizarWidgetObjetivosHoy } from "./widget-objetivos-hoy";
+import { actualizarWidgetObjetivosSemana } from "./widget-objetivos-semana";
 
 const payloadDeItem = (item: ItemObjetivoLocal) => ({
 	texto: item.texto,
@@ -58,6 +59,7 @@ export const crearItemObjetivoLocal = async (params: {
 
 	void sincronizarPronto();
 	void actualizarWidgetObjetivosHoy();
+	void actualizarWidgetObjetivosSemana();
 	return clientId;
 };
 
@@ -70,6 +72,7 @@ export const editarItemObjetivoLocal = async (clientId: string, texto: string): 
 
 	void sincronizarPronto();
 	void actualizarWidgetObjetivosHoy();
+	void actualizarWidgetObjetivosSemana();
 };
 
 export const toggleItemObjetivoLocal = async (clientId: string): Promise<void> => {
@@ -87,6 +90,7 @@ export const toggleItemObjetivoLocal = async (clientId: string): Promise<void> =
 
 	void sincronizarPronto();
 	void actualizarWidgetObjetivosHoy();
+	void actualizarWidgetObjetivosSemana();
 };
 
 export const eliminarItemObjetivoLocal = async (clientId: string): Promise<void> => {
@@ -105,6 +109,7 @@ export const eliminarItemObjetivoLocal = async (clientId: string): Promise<void>
 
 	void sincronizarPronto();
 	void actualizarWidgetObjetivosHoy();
+	void actualizarWidgetObjetivosSemana();
 };
 
 /** Reordena ítems (llamado con el array ya reordenado por los botones ↑/↓). */
@@ -121,4 +126,5 @@ export const reordenarItemsObjetivoLocal = async (
 
 	void sincronizarPronto();
 	void actualizarWidgetObjetivosHoy();
+	void actualizarWidgetObjetivosSemana();
 };

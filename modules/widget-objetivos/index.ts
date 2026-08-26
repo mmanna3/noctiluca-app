@@ -21,3 +21,16 @@ export const escribirSnapshotObjetivosHoy = (items: ObjetivoHoyItem[]): void => 
 		// Sin módulo nativo disponible (web, o app nativa no reconstruida todavía): no-op.
 	}
 };
+
+/** Igual que `escribirSnapshotObjetivosHoy`, pero para el widget de objetivos de la semana. */
+export const escribirSnapshotObjetivosSemana = (items: ObjetivoHoyItem[]): void => {
+	try {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const nativo = require("./src/WidgetObjetivosModule").default;
+		nativo.escribirSnapshotObjetivosSemana(
+			JSON.stringify({ items, actualizadoEn: new Date().toISOString() }),
+		);
+	} catch {
+		// Sin módulo nativo disponible (web, o app nativa no reconstruida todavía): no-op.
+	}
+};

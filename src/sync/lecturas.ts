@@ -3,6 +3,7 @@ import { carpetasDb, escritosDb, habitosDb, itemsObjetivoDb, listasObjetivoDb, r
 import {
 	aEscritoDTO,
 	carpetaDesde,
+	carpetaPorPropositoDesde,
 	carpetasRaizDesde,
 	DiaObjetivoFuturo,
 	diasObjetivosFuturosDesde,
@@ -41,6 +42,10 @@ export const useCarpeta = (idOClientId: number | string | undefined): CarpetaDTO
 /** Todas las carpetas locales (crudas), para evaluar accesos a carpetas privadas. */
 export const useTodasLasCarpetasLocal = (): CarpetaLocal[] | undefined =>
 	useLiveQuery(() => carpetasDb.todas(), []);
+
+/** Id (servidor o clientId) de la carpeta de sistema con un propósito dado. */
+export const useCarpetaPorProposito = (proposito: number): number | string | undefined =>
+	useLiveQuery(async () => carpetaPorPropositoDesde(await carpetasDb.todas(), proposito), [proposito]);
 
 /** Un escrito por su clientId (GUID) o su id de servidor. */
 export const useEscrito = (idOClientId: string | undefined): EscritoDTO | undefined | null =>

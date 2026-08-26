@@ -1,4 +1,4 @@
-import { CarpetaDTO, TipoListaObjetivoEnum } from "@/api/clients";
+import { CarpetaDTO, PropositoCarpetaEnum, TipoListaObjetivoEnum } from "@/api/clients";
 import { Boton, BotonIcono } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
@@ -8,10 +8,12 @@ import { useAuth } from "@/hooks/use-auth";
 import useNavegacion from "@/use-navegacion";
 import HabitTrackerHome from "@/pantallas/habitos/habit-tracker-home";
 import EditorListaObjetivos from "@/pantallas/objetivos/editor-lista-objetivos";
-import { useCarpetasRaiz } from "@/sync/lecturas";
-import { claveDia } from "@/utils/objetivos";
-import { FlatList, View } from "react-native";
+import { useCarpetaPorProposito, useCarpetasRaiz } from "@/sync/lecturas";
+import { claveDia, claveSemana, esCarpetaObjetivos } from "@/utils/objetivos";
+import { FlatList, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+
+const MAX_OBJETIVOS_EN_INICIO = 3;
 
 const subtituloCarpeta = (c: CarpetaDTO): string => {
 	const cantidad = c.cantidadDeEscritos ?? 0;
@@ -20,9 +22,12 @@ const subtituloCarpeta = (c: CarpetaDTO): string => {
 };
 
 export default function Inicio() {
-	const { irANuevaCarpeta, irALogin, irAPapelera, irAHabitos, irABuscarEscritos, verEscritosDeLaCarpeta } = useNavegacion();
+	const { irANuevaCarpeta, irALogin, irAPapelera, irAHabitos, irABuscarEscritos, verEscritosDeLaCarpeta, irACarpeta } =
+		useNavegacion();
 
 	const data = useCarpetasRaiz();
+	const carpetaObjetivosDia = useCarpetaPorProposito(PropositoCarpetaEnum._2);
+	const carpetaObjetivosSemana = useCarpetaPorProposito(PropositoCarpetaEnum._3);
 
 	const cerrarSesion = () => {
 		useAuth.getState().logout();
@@ -37,7 +42,9 @@ export default function Inicio() {
 		);
 	}
 
-	const carpetasRaiz = data;
+	// La carpeta de sistema "objetivos" (y sus subcarpetas día/semana/mes) ya se
+	// muestran arriba como secciones dedicadas; no tiene sentido repetirla acá.
+	const carpetasRaiz = data.filter((c) => !esCarpetaObjetivos(c.propositoCarpeta));
 
 	return (
 		<View className="flex-1">
@@ -52,8 +59,22 @@ export default function Inicio() {
 				</BotonIcono>
 			</Encabezado>
 			<Cuerpo className="flex-1">
-				<EditorListaObjetivos tipo={TipoListaObjetivoEnum._1} clavePeriodo={claveDia(new Date())} />
+				<EditorListaObjetivos
+					tipo={TipoListaObjetivoEnum._1}
+					clavePeriodo={claveDia(new Date())}
+					titulo="Objetivos diarios"
+					maxVisibles={MAX_OBJETIVOS_EN_INICIO}
+					onVerTodos={() => carpetaObjetivosDia !== undefined && irACarpeta(carpetaObjetivosDia)}
+				/>
+				<EditorListaObjetivos
+					tipo={TipoListaObjetivoEnum._2}
+					clavePeriodo={claveSemana(new Date())}
+					titulo="Objetivos semanales"
+					maxVisibles={MAX_OBJETIVOS_EN_INICIO}
+					onVerTodos={() => carpetaObjetivosSemana !== undefined && irACarpeta(carpetaObjetivosSemana)}
+				/>
 				<HabitTrackerHome onVerTodos={irAHabitos} />
+				<Text className="text-sm font-semibold text-slate-800 mb-2">Carpetas</Text>
 				<FlatList
 					data={carpetasRaiz}
 					keyExtractor={(item) => String(item.id ?? item.clientId ?? item.titulo)}

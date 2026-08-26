@@ -1,6 +1,7 @@
 import {
 	aEscritoDTO,
 	carpetaDesde,
+	carpetaPorPropositoDesde,
 	carpetasRaizDesde,
 	claveDeItem,
 	diasObjetivosFuturosDesde,
@@ -58,6 +59,19 @@ describe("carpetasRaizDesde", () => {
 		expect(raices[0].cantidadDeEscritos).toBe(2);
 		expect(raices[0].cantidadDeSubCarpetas).toBe(1);
 		expect(raices[1].cantidadDeEscritos).toBe(0);
+	});
+});
+
+describe("carpetaPorPropositoDesde", () => {
+	test("encuentra la carpeta de sistema por propósito, prefiriendo serverId", () => {
+		const carpetas = [
+			carpeta({ clientId: "dia", serverId: 9002, propositoCarpeta: 2 }),
+			carpeta({ clientId: "semana", propositoCarpeta: 3 }),
+		];
+
+		expect(carpetaPorPropositoDesde(carpetas, 2)).toBe(9002);
+		expect(carpetaPorPropositoDesde(carpetas, 3)).toBe("semana");
+		expect(carpetaPorPropositoDesde(carpetas, 4)).toBeUndefined();
 	});
 });
 
