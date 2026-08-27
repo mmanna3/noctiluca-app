@@ -44,6 +44,22 @@ Prerrequisitos (una sola vez):
 - El dispositivo registrado en el perfil de Apple Developer (`eas device:create` la primera vez con ese iPhone).
 - Certificados de Apple guardados en EAS — si no existen, el primer build los pide automáticamente.
 
+## Cuando hay cambios nativos (widgets, por ej.)
+
+Si tocaste código nativo (Swift, un módulo en `modules/`, un target en `targets/` como el widget) y te aparece un error tipo `Cannot find native module '...'` en el simulador, es porque el binario que tenés corriendo es de antes de ese cambio — un reload de JS (Fast Refresh, `expo start`) nunca agrega código nativo nuevo, hay que recompilar la app:
+
+```bash
+npx expo prebuild -p ios
+cd ios && pod install && cd ..
+npx expo run:ios
+```
+
+- `prebuild` regenera `ios/` en base a la config y los targets (incluye el widget vía `@bacons/apple-targets`).
+- `pod install` linkea los módulos nativos nuevos o modificados.
+- `run:ios` compila y reinstala en el simulador.
+
+Esto también aplica si estás probando en **Expo Go**: ahí directamente no funciona, porque Expo Go no soporta módulos nativos custom — hace falta el dev client de este proyecto.
+
 ## Get a fresh project
 
 When you're ready, run:

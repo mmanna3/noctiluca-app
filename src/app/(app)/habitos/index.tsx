@@ -4,6 +4,7 @@ import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import PuntoMarcador from "@/components/ui/punto-marcador";
+import { useAuth } from "@/hooks/use-auth";
 import useNavegacion from "@/use-navegacion";
 import { useTrackerDia } from "@/sync/lecturas";
 import { TrackerHabitoView } from "@/sync/lecturas-core";
@@ -14,7 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { diasDeSemana, esMismaFecha, inicioDeSemana, nombreDiaCorto } from "@/pantallas/habitos/utilidades-habitos";
 
 export default function HabitosScreen() {
-	const { irAlInicio, irAAdministrarHabitos, irAResumenHabitos } = useNavegacion();
+	const { irAlInicio, irAAdministrarHabitos, irAResumenHabitos, irALogin, irAPapelera } = useNavegacion();
 	const [semanaReferencia, setSemanaReferencia] = useState(() => inicioDeSemana(new Date()));
 	const [diaSeleccionado, setDiaSeleccionado] = useState(() => new Date());
 	const diasSemana = diasDeSemana(semanaReferencia);
@@ -23,6 +24,11 @@ export default function HabitosScreen() {
 	const data = useTrackerDia(diaSeleccionado);
 	const isLoading = data === undefined;
 	const habitos = data ?? [];
+
+	const cerrarSesion = () => {
+		useAuth.getState().logout();
+		irALogin();
+	};
 
 	const registrar = (habito: TrackerHabitoView, valor: boolean | number) => {
 		void guardarRegistroHabitoLocal({
@@ -68,10 +74,10 @@ export default function HabitosScreen() {
 			</Encabezado>
 
 			<View className="flex-row justify-between items-center py-2">
-				<TouchableOpacity onPress={irSemanaAnterior} className="p-2">
+				<TouchableOpacity onPress={irSemanaAnterior} className="p-1">
 					<Ionicons name="chevron-back" size={20} color="#0f172a" />
 				</TouchableOpacity>
-				<View className="flex-row gap-1">
+				<View className="flex-row gap-0.5">
 					{diasSemana.map((dia) => {
 						const esHoy = esMismaFecha(dia, hoy);
 						const esSeleccionado = esMismaFecha(dia, diaSeleccionado);
@@ -79,7 +85,7 @@ export default function HabitosScreen() {
 							<TouchableOpacity
 								key={dia.toISOString()}
 								onPress={() => setDiaSeleccionado(new Date(dia))}
-								className={`items-center px-2 py-1 rounded ${esSeleccionado ? "bg-slate-900" : esHoy ? "bg-slate-100" : ""}`}
+								className={`items-center px-1 py-1 rounded ${esSeleccionado ? "bg-slate-900" : esHoy ? "bg-slate-100" : ""}`}
 							>
 								<Text className={`text-xs ${esSeleccionado ? "text-white" : "text-gray-600"}`}>
 									{nombreDiaCorto(dia)}
@@ -91,7 +97,7 @@ export default function HabitosScreen() {
 						);
 					})}
 				</View>
-				<TouchableOpacity onPress={irSemanaSiguiente} className="p-2">
+				<TouchableOpacity onPress={irSemanaSiguiente} className="p-1">
 					<Ionicons name="chevron-forward" size={20} color="#0f172a" />
 				</TouchableOpacity>
 			</View>
@@ -119,6 +125,14 @@ export default function HabitosScreen() {
 					/>
 				)}
 			</Cuerpo>
+			<View className="flex-row justify-between w-full mt-auto pt-2 pb-2">
+				<Boton soloBorde onClick={cerrarSesion}>
+					<Ionicons name="close" size={24} color="#0f172a" />
+				</Boton>
+				<Boton soloBorde onClick={irAPapelera}>
+					<Ionicons name="trash-outline" size={20} color="#0f172a" />
+				</Boton>
+			</View>
 		</View>
 	);
 }

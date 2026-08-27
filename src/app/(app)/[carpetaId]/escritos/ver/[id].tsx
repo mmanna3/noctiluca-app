@@ -81,7 +81,6 @@ export default function VerEscrito() {
 			<Encabezado>
 				<Boton soloBorde onClick={volver}>
 					<Ionicons name="chevron-back" size={16} color="#0f172a" />
-					{data.carpetaTitulo ?? ""}/{titulo}
 				</Boton>
 				<Boton sinBorde onClick={eliminarYVolver} disabled={eliminando}>
 					{eliminando ? (
@@ -96,7 +95,7 @@ export default function VerEscrito() {
 					value={titulo}
 					onChangeText={setTitulo}
 					placeholder="Título"
-					className="text-xl font-semibold text-slate-900 border-b border-gray-100 py-2 mb-2"
+					className="text-xl font-semibold text-slate-900 py-2 mb-2"
 				/>
 				<TextInput
 					value={cuerpo}

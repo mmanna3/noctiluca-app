@@ -27,7 +27,7 @@ export default function NuevoEscrito() {
 			carpetaClientId: carpeta?.clientId,
 			carpetaId: carpeta?.id,
 		});
-		irAVerEscrito(clientId, carpetaId);
+		irAVerEscrito(clientId, carpetaId, true);
 	};
 
 	return (

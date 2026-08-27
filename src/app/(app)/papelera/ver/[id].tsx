@@ -58,7 +58,6 @@ export default function VerEscritoPapelera() {
 			<Encabezado>
 				<Boton soloBorde onClick={volverAPapelera}>
 					<Ionicons name="chevron-back" size={16} color="#0f172a" />
-					 Papelera/{data.titulo}
 				</Boton>
 				<Boton sinBorde onClick={eliminarDefinitivamente} disabled={eliminando}>
 					{eliminando ? (

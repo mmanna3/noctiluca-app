@@ -34,12 +34,19 @@ const useNavegacion = () => {
 			const idCarpeta = carpetaIdDestino ?? carpetaId;
 			volver(`/${idCarpeta}/escritos`);
 		},
-		irAVerEscrito: (escritoId: string, carpetaIdOverride?: string | number) => {
+		/**
+		 * `reemplazar: true` saca la pantalla actual del historial en vez de
+		 * apilar sobre ella — se usa al abrir el escrito recién creado desde
+		 * "nuevo", para que el "atrás" en el visor no vuelva al formulario
+		 * vacío de creación sino a la carpeta.
+		 */
+		irAVerEscrito: (escritoId: string, carpetaIdOverride?: string | number, reemplazar?: boolean) => {
 			const idCarpeta = carpetaIdOverride ?? carpetaId;
+			const navegar = reemplazar ? router.replace : router.push;
 			if (pathname.includes("/papelera")) {
-				router.push(`/papelera/ver/${escritoId}`);
+				navegar(`/papelera/ver/${escritoId}`);
 			} else {
-				router.push(`/${idCarpeta}/escritos/ver/${escritoId}`);
+				navegar(`/${idCarpeta}/escritos/ver/${escritoId}`);
 			}
 		},
 		volverAPapelera: () => volver("/papelera"),
