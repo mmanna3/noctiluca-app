@@ -1,7 +1,12 @@
+import { TipoListaObjetivoEnum } from "@/api/clients";
 import {
+	claveAnio,
 	claveDia,
+	claveLustro,
+	clavePeriodoActual,
 	esDiaFuturo,
 	etiquetaDiaRelativo,
+	etiquetaPeriodo,
 	fechaManana,
 	fechaMinimaPlanificacion,
 } from "../objetivos";
@@ -35,5 +40,29 @@ describe("helpers de planificación", () => {
 	test("esDiaFuturo distingue hoy y mañana", () => {
 		expect(esDiaFuturo(new Date(2026, 6, 5), ref)).toBe(false);
 		expect(esDiaFuturo(new Date(2026, 6, 6), ref)).toBe(true);
+	});
+});
+
+describe("claves de año y lustro", () => {
+	test("claveAnio es el año en YYYY", () => {
+		expect(claveAnio(new Date(2026, 5, 15))).toBe("2026");
+	});
+
+	test("claveLustro ancla en bloques fijos de múltiplos de 5", () => {
+		expect(claveLustro(new Date(2025, 0, 1))).toBe("2025-2029");
+		expect(claveLustro(new Date(2026, 5, 15))).toBe("2025-2029");
+		expect(claveLustro(new Date(2029, 11, 31))).toBe("2025-2029");
+		expect(claveLustro(new Date(2030, 0, 1))).toBe("2030-2034");
+		expect(claveLustro(new Date(2024, 5, 1))).toBe("2020-2024");
+	});
+
+	test("clavePeriodoActual soporta año y lustro", () => {
+		expect(clavePeriodoActual(TipoListaObjetivoEnum._4, ref)).toBe("2026");
+		expect(clavePeriodoActual(TipoListaObjetivoEnum._5, ref)).toBe("2025-2029");
+	});
+
+	test("etiquetaPeriodo soporta año y lustro", () => {
+		expect(etiquetaPeriodo(TipoListaObjetivoEnum._4, "2026")).toBe("2026");
+		expect(etiquetaPeriodo(TipoListaObjetivoEnum._5, "2025-2029")).toBe("2025–2029");
 	});
 });

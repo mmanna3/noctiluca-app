@@ -64,6 +64,48 @@ export class Client {
      * @param body (optional) 
      * @return Success
      */
+    validarPassword(body: ValidarPasswordDTO | undefined): Promise<ValidarPasswordResponseDTO> {
+        let url_ = this.baseUrl + "/api/Auth/validar-password";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processValidarPassword(_response);
+        });
+    }
+
+    protected processValidarPassword(response: Response): Promise<ValidarPasswordResponseDTO> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidarPasswordResponseDTO.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidarPasswordResponseDTO>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
     cambiarPassword(body: CambiarPasswordDTO | undefined): Promise<LoginResponseDTO> {
         let url_ = this.baseUrl + "/api/Auth/cambiar-password";
         url_ = url_.replace(/[?&]$/, "");
@@ -100,55 +142,6 @@ export class Client {
             });
         }
         return Promise.resolve<LoginResponseDTO>(null as any);
-    }
-
-    /**
-     * @param body (optional)
-     * @return Success
-     */
-    validarPassword(body: ValidarPasswordDTO | undefined): Promise<ValidarPasswordResponseDTO> {
-        let url_ = this.baseUrl + "/api/Auth/validar-password";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processValidarPassword(_response);
-        });
-    }
-
-    protected processValidarPassword(response: Response): Promise<ValidarPasswordResponseDTO> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ValidarPasswordResponseDTO.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ValidarPasswordResponseDTO.fromJS(resultData400);
-            return result400;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<ValidarPasswordResponseDTO>(null as any);
     }
 
     /**
@@ -1214,388 +1207,6 @@ export class Client {
     }
 
     /**
-     * @param fecha (optional) 
-     * @return Success
-     */
-    dia(fecha: Date | undefined): Promise<ListaObjetivoDTO> {
-        let url_ = this.baseUrl + "/api/Objetivo/dia?";
-        if (fecha === null)
-            throw new Error("The parameter 'fecha' cannot be null.");
-        else if (fecha !== undefined)
-            url_ += "fecha=" + encodeURIComponent(fecha ? "" + fecha.toISOString() : "") + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "text/plain"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDia(_response);
-        });
-    }
-
-    protected processDia(response: Response): Promise<ListaObjetivoDTO> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ListaObjetivoDTO.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<ListaObjetivoDTO>(null as any);
-    }
-
-    /**
-     * @param tipo (optional) 
-     * @param clavePeriodo (optional) 
-     * @return Success
-     */
-    lista(tipo: TipoListaObjetivoEnum | undefined, clavePeriodo: string | undefined): Promise<ListaObjetivoDTO> {
-        let url_ = this.baseUrl + "/api/Objetivo/lista?";
-        if (tipo === null)
-            throw new Error("The parameter 'tipo' cannot be null.");
-        else if (tipo !== undefined)
-            url_ += "tipo=" + encodeURIComponent("" + tipo) + "&";
-        if (clavePeriodo === null)
-            throw new Error("The parameter 'clavePeriodo' cannot be null.");
-        else if (clavePeriodo !== undefined)
-            url_ += "clavePeriodo=" + encodeURIComponent("" + clavePeriodo) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "text/plain"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processLista(_response);
-        });
-    }
-
-    protected processLista(response: Response): Promise<ListaObjetivoDTO> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ListaObjetivoDTO.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<ListaObjetivoDTO>(null as any);
-    }
-
-    /**
-     * @return Success
-     */
-    lista2(id: number): Promise<ListaObjetivoDTO> {
-        let url_ = this.baseUrl + "/api/Objetivo/lista/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "text/plain"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processLista2(_response);
-        });
-    }
-
-    protected processLista2(response: Response): Promise<ListaObjetivoDTO> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ListaObjetivoDTO.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<ListaObjetivoDTO>(null as any);
-    }
-
-    /**
-     * @param tipo (optional) 
-     * @param pagina (optional) 
-     * @param tamano (optional) 
-     * @return Success
-     */
-    historico(tipo: TipoListaObjetivoEnum | undefined, pagina: number | undefined, tamano: number | undefined): Promise<HistoricoObjetivoPaginadoDTO> {
-        let url_ = this.baseUrl + "/api/Objetivo/historico?";
-        if (tipo === null)
-            throw new Error("The parameter 'tipo' cannot be null.");
-        else if (tipo !== undefined)
-            url_ += "tipo=" + encodeURIComponent("" + tipo) + "&";
-        if (pagina === null)
-            throw new Error("The parameter 'pagina' cannot be null.");
-        else if (pagina !== undefined)
-            url_ += "pagina=" + encodeURIComponent("" + pagina) + "&";
-        if (tamano === null)
-            throw new Error("The parameter 'tamano' cannot be null.");
-        else if (tamano !== undefined)
-            url_ += "tamano=" + encodeURIComponent("" + tamano) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "text/plain"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processHistorico(_response);
-        });
-    }
-
-    protected processHistorico(response: Response): Promise<HistoricoObjetivoPaginadoDTO> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = HistoricoObjetivoPaginadoDTO.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<HistoricoObjetivoPaginadoDTO>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    itemPOST(body: CrearItemObjetivoDTO | undefined): Promise<ItemObjetivoDTO> {
-        let url_ = this.baseUrl + "/api/Objetivo/item";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processItemPOST(_response);
-        });
-    }
-
-    protected processItemPOST(response: Response): Promise<ItemObjetivoDTO> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ItemObjetivoDTO.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<ItemObjetivoDTO>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    itemPUT(id: number, body: EditarItemObjetivoDTO | undefined): Promise<ItemObjetivoDTO> {
-        let url_ = this.baseUrl + "/api/Objetivo/item/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processItemPUT(_response);
-        });
-    }
-
-    protected processItemPUT(response: Response): Promise<ItemObjetivoDTO> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ItemObjetivoDTO.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<ItemObjetivoDTO>(null as any);
-    }
-
-    /**
-     * @return Success
-     */
-    itemDELETE(id: number): Promise<void> {
-        let url_ = this.baseUrl + "/api/Objetivo/item/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "DELETE",
-            headers: {
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processItemDELETE(_response);
-        });
-    }
-
-    protected processItemDELETE(response: Response): Promise<void> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            return;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    /**
-     * @return Success
-     */
-    completado(id: number): Promise<ItemObjetivoDTO> {
-        let url_ = this.baseUrl + "/api/Objetivo/item/{id}/completado";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "PUT",
-            headers: {
-                "Accept": "text/plain"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCompletado(_response);
-        });
-    }
-
-    protected processCompletado(response: Response): Promise<ItemObjetivoDTO> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ItemObjetivoDTO.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<ItemObjetivoDTO>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    posiciones(body: ActualizarPosicionesItemObjetivoDTO | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/Objetivo/item/posiciones";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processPosiciones(_response);
-        });
-    }
-
-    protected processPosiciones(response: Response): Promise<void> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            return;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    /**
      * @return Success
      */
     papelera(): Promise<EscritoDTO[]> {
@@ -1809,53 +1420,6 @@ export interface IActualizarPosicionesDTO {
     posiciones: PosicionCarpetaDTO[];
 }
 
-export class ActualizarPosicionesItemObjetivoDTO implements IActualizarPosicionesItemObjetivoDTO {
-    posiciones!: PosicionItemObjetivoDTO[];
-
-    constructor(data?: IActualizarPosicionesItemObjetivoDTO) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.posiciones = [];
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["posiciones"])) {
-                this.posiciones = [] as any;
-                for (let item of _data["posiciones"])
-                    this.posiciones!.push(PosicionItemObjetivoDTO.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): ActualizarPosicionesItemObjetivoDTO {
-        data = typeof data === 'object' ? data : {};
-        let result = new ActualizarPosicionesItemObjetivoDTO();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.posiciones)) {
-            data["posiciones"] = [];
-            for (let item of this.posiciones)
-                data["posiciones"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IActualizarPosicionesItemObjetivoDTO {
-    posiciones: PosicionItemObjetivoDTO[];
-}
-
 export class CambiarPasswordDTO implements ICambiarPasswordDTO {
     usuario!: string;
     passwordNuevo!: string;
@@ -2004,58 +1568,6 @@ export interface ICarpetaDTO {
     actualizadoEn?: Date;
 }
 
-export class CrearItemObjetivoDTO implements ICrearItemObjetivoDTO {
-    listaObjetivoId?: number | undefined;
-    tipo?: TipoListaObjetivoEnum;
-    clavePeriodo?: string | undefined;
-    texto!: string;
-    posicion?: number | undefined;
-
-    constructor(data?: ICrearItemObjetivoDTO) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.listaObjetivoId = _data["listaObjetivoId"];
-            this.tipo = _data["tipo"];
-            this.clavePeriodo = _data["clavePeriodo"];
-            this.texto = _data["texto"];
-            this.posicion = _data["posicion"];
-        }
-    }
-
-    static fromJS(data: any): CrearItemObjetivoDTO {
-        data = typeof data === 'object' ? data : {};
-        let result = new CrearItemObjetivoDTO();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["listaObjetivoId"] = this.listaObjetivoId;
-        data["tipo"] = this.tipo;
-        data["clavePeriodo"] = this.clavePeriodo;
-        data["texto"] = this.texto;
-        data["posicion"] = this.posicion;
-        return data;
-    }
-}
-
-export interface ICrearItemObjetivoDTO {
-    listaObjetivoId?: number | undefined;
-    tipo?: TipoListaObjetivoEnum;
-    clavePeriodo?: string | undefined;
-    texto: string;
-    posicion?: number | undefined;
-}
-
 export enum CriterioDeOrdenEnum {
     _1 = 1,
     _2 = 2,
@@ -2111,42 +1623,6 @@ export interface IDiaResumenDTO {
     estado?: string | undefined;
     valorBooleano?: boolean | undefined;
     valorNumerico?: number | undefined;
-}
-
-export class EditarItemObjetivoDTO implements IEditarItemObjetivoDTO {
-    texto!: string;
-
-    constructor(data?: IEditarItemObjetivoDTO) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.texto = _data["texto"];
-        }
-    }
-
-    static fromJS(data: any): EditarItemObjetivoDTO {
-        data = typeof data === 'object' ? data : {};
-        let result = new EditarItemObjetivoDTO();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["texto"] = this.texto;
-        return data;
-    }
-}
-
-export interface IEditarItemObjetivoDTO {
-    texto: string;
 }
 
 export class EscritoDTO implements IEscritoDTO {
@@ -2441,122 +1917,6 @@ export interface IHabitoTrackerItemDTO {
     valorNumerico?: number | undefined;
 }
 
-export class HistoricoObjetivoDTO implements IHistoricoObjetivoDTO {
-    id?: number;
-    tipo?: TipoListaObjetivoEnum;
-    clavePeriodo?: string | undefined;
-    fechaInicio?: Date;
-    fechaFin?: Date;
-    cantidadItems?: number;
-    cantidadCompletados?: number;
-
-    constructor(data?: IHistoricoObjetivoDTO) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.tipo = _data["tipo"];
-            this.clavePeriodo = _data["clavePeriodo"];
-            this.fechaInicio = _data["fechaInicio"] ? new Date(_data["fechaInicio"].toString()) : <any>undefined;
-            this.fechaFin = _data["fechaFin"] ? new Date(_data["fechaFin"].toString()) : <any>undefined;
-            this.cantidadItems = _data["cantidadItems"];
-            this.cantidadCompletados = _data["cantidadCompletados"];
-        }
-    }
-
-    static fromJS(data: any): HistoricoObjetivoDTO {
-        data = typeof data === 'object' ? data : {};
-        let result = new HistoricoObjetivoDTO();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["tipo"] = this.tipo;
-        data["clavePeriodo"] = this.clavePeriodo;
-        data["fechaInicio"] = this.fechaInicio ? this.fechaInicio.toISOString() : <any>undefined;
-        data["fechaFin"] = this.fechaFin ? this.fechaFin.toISOString() : <any>undefined;
-        data["cantidadItems"] = this.cantidadItems;
-        data["cantidadCompletados"] = this.cantidadCompletados;
-        return data;
-    }
-}
-
-export interface IHistoricoObjetivoDTO {
-    id?: number;
-    tipo?: TipoListaObjetivoEnum;
-    clavePeriodo?: string | undefined;
-    fechaInicio?: Date;
-    fechaFin?: Date;
-    cantidadItems?: number;
-    cantidadCompletados?: number;
-}
-
-export class HistoricoObjetivoPaginadoDTO implements IHistoricoObjetivoPaginadoDTO {
-    items?: HistoricoObjetivoDTO[] | undefined;
-    pagina?: number;
-    tamano?: number;
-    total?: number;
-
-    constructor(data?: IHistoricoObjetivoPaginadoDTO) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(HistoricoObjetivoDTO.fromJS(item));
-            }
-            this.pagina = _data["pagina"];
-            this.tamano = _data["tamano"];
-            this.total = _data["total"];
-        }
-    }
-
-    static fromJS(data: any): HistoricoObjetivoPaginadoDTO {
-        data = typeof data === 'object' ? data : {};
-        let result = new HistoricoObjetivoPaginadoDTO();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        data["pagina"] = this.pagina;
-        data["tamano"] = this.tamano;
-        data["total"] = this.total;
-        return data;
-    }
-}
-
-export interface IHistoricoObjetivoPaginadoDTO {
-    items?: HistoricoObjetivoDTO[] | undefined;
-    pagina?: number;
-    tamano?: number;
-    total?: number;
-}
-
 export class ItemObjetivoDTO implements IItemObjetivoDTO {
     id?: number;
     texto!: string;
@@ -2753,82 +2113,6 @@ export interface ILoginDTO {
     password: string;
 }
 
-export class ValidarPasswordDTO implements IValidarPasswordDTO {
-    password!: string;
-
-    constructor(data?: IValidarPasswordDTO) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.password = _data["password"];
-        }
-    }
-
-    static fromJS(data: any): ValidarPasswordDTO {
-        data = typeof data === 'object' ? data : {};
-        let result = new ValidarPasswordDTO();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["password"] = this.password;
-        return data;
-    }
-}
-
-export interface IValidarPasswordDTO {
-    password: string;
-}
-
-export class ValidarPasswordResponseDTO implements IValidarPasswordResponseDTO {
-    exito?: boolean;
-    error?: string | undefined;
-
-    constructor(data?: IValidarPasswordResponseDTO) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.exito = _data["exito"];
-            this.error = _data["error"];
-        }
-    }
-
-    static fromJS(data: any): ValidarPasswordResponseDTO {
-        data = typeof data === 'object' ? data : {};
-        let result = new ValidarPasswordResponseDTO();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["exito"] = this.exito;
-        data["error"] = this.error;
-        return data;
-    }
-}
-
-export interface IValidarPasswordResponseDTO {
-    exito?: boolean;
-    error?: string | undefined;
-}
-
 export class LoginResponseDTO implements ILoginResponseDTO {
     exito?: boolean;
     token?: string | undefined;
@@ -2958,46 +2242,6 @@ export class PosicionCarpetaDTO implements IPosicionCarpetaDTO {
 
 export interface IPosicionCarpetaDTO {
     idDeCarpeta: number;
-    posicion: number;
-}
-
-export class PosicionItemObjetivoDTO implements IPosicionItemObjetivoDTO {
-    idDeItem!: number;
-    posicion!: number;
-
-    constructor(data?: IPosicionItemObjetivoDTO) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.idDeItem = _data["idDeItem"];
-            this.posicion = _data["posicion"];
-        }
-    }
-
-    static fromJS(data: any): PosicionItemObjetivoDTO {
-        data = typeof data === 'object' ? data : {};
-        let result = new PosicionItemObjetivoDTO();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["idDeItem"] = this.idDeItem;
-        data["posicion"] = this.posicion;
-        return data;
-    }
-}
-
-export interface IPosicionItemObjetivoDTO {
-    idDeItem: number;
     posicion: number;
 }
 
@@ -3473,6 +2717,8 @@ export enum TipoListaObjetivoEnum {
     _1 = 1,
     _2 = 2,
     _3 = 3,
+    _4 = 4,
+    _5 = 5,
 }
 
 export class TombstoneDTO implements ITombstoneDTO {
@@ -3617,6 +2863,82 @@ export interface IUpsertRegistroHabitoDTO {
     fecha?: Date;
     valorBooleano?: boolean | undefined;
     valorNumerico?: number | undefined;
+}
+
+export class ValidarPasswordDTO implements IValidarPasswordDTO {
+    password!: string;
+
+    constructor(data?: IValidarPasswordDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.password = _data["password"];
+        }
+    }
+
+    static fromJS(data: any): ValidarPasswordDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValidarPasswordDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["password"] = this.password;
+        return data;
+    }
+}
+
+export interface IValidarPasswordDTO {
+    password: string;
+}
+
+export class ValidarPasswordResponseDTO implements IValidarPasswordResponseDTO {
+    exito?: boolean;
+    error?: string | undefined;
+
+    constructor(data?: IValidarPasswordResponseDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.exito = _data["exito"];
+            this.error = _data["error"];
+        }
+    }
+
+    static fromJS(data: any): ValidarPasswordResponseDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValidarPasswordResponseDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["exito"] = this.exito;
+        data["error"] = this.error;
+        return data;
+    }
+}
+
+export interface IValidarPasswordResponseDTO {
+    exito?: boolean;
+    error?: string | undefined;
 }
 
 export class ApiException extends Error {

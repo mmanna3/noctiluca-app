@@ -1,34 +1,34 @@
-import { PropositoCarpetaEnum, TipoListaObjetivoEnum } from "@/api/clients";
+import { TipoListaObjetivoEnum } from "@/api/clients";
 import Cuerpo from "@/components/ui/cuerpo";
 import PantallaObjetivos from "@/pantallas/objetivos/pantalla-objetivos";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
-type PeriodoObjetivo = "hoy" | "semana" | "mes" | "anio" | "5-anios";
+type PeriodoObjetivo = "hoy" | "semana" | "mes" | "anio" | "lustro";
 
 interface OpcionPeriodo {
 	clave: PeriodoObjetivo;
 	etiqueta: string;
+	tipo: TipoListaObjetivoEnum;
 }
 
 const anioActual = new Date().getFullYear();
 
 const PERIODOS: OpcionPeriodo[] = [
-	{ clave: "hoy", etiqueta: "Hoy" },
-	{ clave: "semana", etiqueta: "Semana" },
-	{ clave: "mes", etiqueta: "Mes" },
-	{ clave: "anio", etiqueta: String(anioActual) },
-	{ clave: "5-anios", etiqueta: "5 años" },
+	{ clave: "hoy", etiqueta: "Hoy", tipo: TipoListaObjetivoEnum._1 },
+	{ clave: "semana", etiqueta: "Semana", tipo: TipoListaObjetivoEnum._2 },
+	{ clave: "mes", etiqueta: "Mes", tipo: TipoListaObjetivoEnum._3 },
+	{ clave: "anio", etiqueta: String(anioActual), tipo: TipoListaObjetivoEnum._4 },
+	{ clave: "lustro", etiqueta: "5 años", tipo: TipoListaObjetivoEnum._5 },
 ];
 
 /**
  * Tab "objetivos": funciona como una mini-app aparte, con su propia
  * navegación por período arriba (reemplaza la top-bar de "/" + lupa + "+").
- * Por ahora solo "hoy" y "semana" tienen contenido; el resto son a futuro
- * (requieren cambios de backend).
  */
 export default function ObjetivosTab() {
 	const [periodo, setPeriodo] = useState<PeriodoObjetivo>("hoy");
+	const opcionActual = PERIODOS.find((o) => o.clave === periodo) ?? PERIODOS[0];
 
 	return (
 		<View className="flex-1">
@@ -49,17 +49,7 @@ export default function ObjetivosTab() {
 				})}
 			</View>
 			<Cuerpo className="flex-1">
-				{periodo === "hoy" && (
-					<PantallaObjetivos tipo={TipoListaObjetivoEnum._1} proposito={PropositoCarpetaEnum._2} />
-				)}
-				{periodo === "semana" && (
-					<PantallaObjetivos tipo={TipoListaObjetivoEnum._2} proposito={PropositoCarpetaEnum._3} />
-				)}
-				{(periodo === "mes" || periodo === "anio" || periodo === "5-anios") && (
-					<View className="flex-1 items-center pt-10">
-						<Text className="text-sm text-gray-400">Próximamente</Text>
-					</View>
-				)}
+				<PantallaObjetivos key={opcionActual.clave} tipo={opcionActual.tipo} />
 			</Cuerpo>
 		</View>
 	);

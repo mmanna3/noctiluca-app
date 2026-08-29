@@ -33,6 +33,18 @@ export const claveMes = (fecha: Date): string => {
 	return `${year}-${month}`;
 };
 
+export const claveAnio = (fecha: Date): string => String(fecha.getFullYear());
+
+export const ANIOS_POR_LUSTRO = 5;
+
+/** Año en que arranca el lustro que contiene a `year` (bloques fijos anclados en múltiplos de 5). */
+export const anioInicioLustro = (year: number): number => year - (year % ANIOS_POR_LUSTRO);
+
+export const claveLustro = (fecha: Date): string => {
+	const inicio = anioInicioLustro(fecha.getFullYear());
+	return `${inicio}-${inicio + ANIOS_POR_LUSTRO - 1}`;
+};
+
 export const clavePeriodoActual = (tipo: TipoListaObjetivoEnum, fecha = new Date()): string => {
 	switch (tipo) {
 	case TipoListaObjetivoEnum._1:
@@ -41,6 +53,10 @@ export const clavePeriodoActual = (tipo: TipoListaObjetivoEnum, fecha = new Date
 		return claveSemana(fecha);
 	case TipoListaObjetivoEnum._3:
 		return claveMes(fecha);
+	case TipoListaObjetivoEnum._4:
+		return claveAnio(fecha);
+	case TipoListaObjetivoEnum._5:
+		return claveLustro(fecha);
 	default:
 		return formatearFechaClave(fecha);
 	}
@@ -59,6 +75,10 @@ export const etiquetaPeriodo = (
 		return etiquetaSemana(clavePeriodo, fechaInicio, fechaFin);
 	case TipoListaObjetivoEnum._3:
 		return etiquetaMes(clavePeriodo);
+	case TipoListaObjetivoEnum._4:
+		return clavePeriodo;
+	case TipoListaObjetivoEnum._5:
+		return etiquetaLustro(clavePeriodo);
 	default:
 		return clavePeriodo;
 	}
@@ -82,6 +102,11 @@ const etiquetaMes = (clave: string): string => {
 	const [year, month] = clave.split("-");
 	const fecha = new Date(Number(year), Number(month) - 1, 1);
 	return fecha.toLocaleDateString("es-AR", { month: "long", year: "numeric" });
+};
+
+const etiquetaLustro = (clave: string): string => {
+	const [inicio, fin] = clave.split("-");
+	return `${inicio}–${fin}`;
 };
 
 export const parsearClaveDia = (clave: string): Date => {
@@ -155,6 +180,10 @@ export const tituloPeriodoActual = (tipo: TipoListaObjetivoEnum): string => {
 		return "Esta semana";
 	case TipoListaObjetivoEnum._3:
 		return "Este mes";
+	case TipoListaObjetivoEnum._4:
+		return "Este año";
+	case TipoListaObjetivoEnum._5:
+		return "Este lustro";
 	default:
 		return "Objetivos";
 	}

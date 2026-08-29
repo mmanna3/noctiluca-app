@@ -1,3 +1,4 @@
+import { TipoListaObjetivoEnum } from "@/api/clients";
 import { useRouter, usePathname, useLocalSearchParams } from "expo-router";
 
 const useNavegacion = () => {
@@ -61,12 +62,13 @@ const useNavegacion = () => {
 		irAModoLectura: () => router.push("/modo-lectura"),
 		irAHabitos: () => router.push("/habitos"),
 		irAResumenHabitos: () => router.push("/resumen-habitos"),
-		irAListaObjetivos: (carpetaIdDestino: number, listaIdDestino: number) =>
-			router.push(`/${carpetaIdDestino}/lista-objetivos/${listaIdDestino}`),
+		irAListaObjetivos: (listaIdDestino: number) =>
+			router.push(`/lista-objetivos/${listaIdDestino}`),
 		irACarpetasPrivadas: () => router.push("/carpetas-privadas"),
 		irAAdministrarHabitos: () => router.push("/administrar-habitos"),
 		irABuscarEscritos: () => router.push("/buscar-escritos"),
-		irAHistoricoObjetivos: (cId: number) => router.push(`/${cId}/historico-objetivos`),
+		irAHistoricoObjetivos: (tipo: TipoListaObjetivoEnum) =>
+			router.push(`/historico-objetivos?tipo=${tipo}`),
 	};
 };
 

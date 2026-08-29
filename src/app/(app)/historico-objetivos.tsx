@@ -5,24 +5,24 @@ import Encabezado from "@/components/ui/encabezado";
 import ListaItem from "@/components/ui/lista-item";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import useNavegacion from "@/use-navegacion";
-import { useCarpeta, useHistoricoObjetivos } from "@/sync/lecturas";
+import { useHistoricoObjetivos } from "@/sync/lecturas";
 import { HistoricoObjetivoResumen } from "@/sync/lecturas-core";
-import { etiquetaPeriodo, inicioDeDiaLocal, propositoATipo } from "@/utils/objetivos";
+import { etiquetaPeriodo, inicioDeDiaLocal } from "@/utils/objetivos";
+import { useLocalSearchParams } from "expo-router";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function HistoricoObjetivos() {
-	const { carpetaId, volver: volverNav, irAListaObjetivos } = useNavegacion();
+	const { volver: volverNav, irAListaObjetivos } = useNavegacion();
+	const { tipo: tipoParam } = useLocalSearchParams<{ tipo?: string }>();
 
-	const carpeta = useCarpeta(carpetaId);
-	const tipo = propositoATipo(carpeta?.propositoCarpeta);
+	const tipo =
+		tipoParam !== undefined ? (Number(tipoParam) as TipoListaObjetivoEnum) : undefined;
 	const historico = useHistoricoObjetivos(tipo);
 
-	const volver = () => {
-		if (carpetaId) volverNav(`/${carpetaId}/escritos`);
-	};
+	const volver = () => volverNav("/objetivos");
 
-	if (carpeta === undefined || historico === undefined) {
+	if (historico === undefined) {
 		return (
 			<View className="flex-1 justify-center items-center">
 				<LoadingSpinner />
@@ -69,7 +69,7 @@ export default function HistoricoObjetivos() {
 							)}
 							subtitulo={subtitulo(item)}
 							onClick={() => {
-								if (item.id && carpetaId) irAListaObjetivos(Number(carpetaId), item.id);
+								if (item.id) irAListaObjetivos(item.id);
 							}}
 						/>
 					))

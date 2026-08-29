@@ -3,8 +3,7 @@ import { nuevoId } from "./ids";
 import { compactar } from "./outbox";
 import { sincronizarPronto } from "./sync-engine";
 import { ItemObjetivoLocal, OperacionOutbox } from "./tipos";
-import { actualizarWidgetObjetivosHoy } from "./widget-objetivos-hoy";
-import { actualizarWidgetObjetivosSemana } from "./widget-objetivos-semana";
+import { actualizarWidgetsObjetivos } from "./widgets-objetivos";
 
 const payloadDeItem = (item: ItemObjetivoLocal) => ({
 	texto: item.texto,
@@ -58,8 +57,7 @@ export const crearItemObjetivoLocal = async (params: {
 	await encolarUpsertItem(item);
 
 	void sincronizarPronto();
-	void actualizarWidgetObjetivosHoy();
-	void actualizarWidgetObjetivosSemana();
+	actualizarWidgetsObjetivos();
 	return clientId;
 };
 
@@ -71,8 +69,7 @@ export const editarItemObjetivoLocal = async (clientId: string, texto: string): 
 	await encolarUpsertItem(actualizado);
 
 	void sincronizarPronto();
-	void actualizarWidgetObjetivosHoy();
-	void actualizarWidgetObjetivosSemana();
+	actualizarWidgetsObjetivos();
 };
 
 export const toggleItemObjetivoLocal = async (clientId: string): Promise<void> => {
@@ -89,8 +86,7 @@ export const toggleItemObjetivoLocal = async (clientId: string): Promise<void> =
 	await encolarUpsertItem(actualizado);
 
 	void sincronizarPronto();
-	void actualizarWidgetObjetivosHoy();
-	void actualizarWidgetObjetivosSemana();
+	actualizarWidgetsObjetivos();
 };
 
 export const eliminarItemObjetivoLocal = async (clientId: string): Promise<void> => {
@@ -108,8 +104,7 @@ export const eliminarItemObjetivoLocal = async (clientId: string): Promise<void>
 	});
 
 	void sincronizarPronto();
-	void actualizarWidgetObjetivosHoy();
-	void actualizarWidgetObjetivosSemana();
+	actualizarWidgetsObjetivos();
 };
 
 /** Reordena ítems (llamado con el array ya reordenado por los botones ↑/↓). */
@@ -125,6 +120,5 @@ export const reordenarItemsObjetivoLocal = async (
 	}
 
 	void sincronizarPronto();
-	void actualizarWidgetObjetivosHoy();
-	void actualizarWidgetObjetivosSemana();
+	actualizarWidgetsObjetivos();
 };

@@ -19,8 +19,7 @@ import {
 import { recalcularEstado, refrescarPendientes, useEstadoSync } from "./estado-sync";
 import { fechaCalendarioDesdeApi } from "./fechas";
 import { OperacionOutbox } from "./tipos";
-import { actualizarWidgetObjetivosHoy } from "./widget-objetivos-hoy";
-import { actualizarWidgetObjetivosSemana } from "./widget-objetivos-semana";
+import { actualizarWidgetsObjetivos } from "./widgets-objetivos";
 
 let enEjecucion = false;
 let pendienteDeCorrer = false;
@@ -47,8 +46,7 @@ export const sincronizar = async (): Promise<void> => {
 	try {
 		await push();
 		await pull();
-		void actualizarWidgetObjetivosHoy();
-		void actualizarWidgetObjetivosSemana();
+		actualizarWidgetsObjetivos();
 		syncOk = true;
 		useEstadoSync.getState().setError(undefined);
 	} catch (error) {

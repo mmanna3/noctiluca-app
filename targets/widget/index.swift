@@ -6,5 +6,8 @@ struct exportWidgets: WidgetBundle {
 	var body: some Widget {
 		ObjetivosHoyWidget()
 		ObjetivosSemanaWidget()
+		ObjetivosMesWidget()
+		ObjetivosAnioWidget()
+		ObjetivosLustroWidget()
 	}
 }
