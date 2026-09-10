@@ -83,6 +83,7 @@ struct ObjetivosAnioWidgetView: View {
 		}
 		.frame(maxWidth: .infinity, alignment: .leading)
 		.containerBackground(.background, for: .widget)
+		.widgetURL(URL(string: "noctiluca:///objetivos?periodo=anio"))
 	}
 }
 

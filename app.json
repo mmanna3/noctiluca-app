@@ -5,6 +5,7 @@
     "scheme": "noctiluca",
     "version": "1.0.0",
     "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "icon": "./assets/images/icon.png",
     "platforms": [
@@ -26,7 +27,7 @@
       }
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [

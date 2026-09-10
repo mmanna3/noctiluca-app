@@ -64,6 +64,8 @@
     "fresco": "expo prebuild -p ios --clean && expo run:ios --device \"iPhone 16 Pro\"",
     "web": "expo start --web",
     "build:web": "npx expo export --platform web",
+    "desplegar:web": "npx expo export --platform web && eas deploy",
+    "desplegar:web:prod": "npx expo export --platform web && eas deploy --prod",
     "compilar:iphone": "eas build --platform ios --profile internal",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",

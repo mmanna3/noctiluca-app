@@ -1,7 +1,8 @@
 import { TipoListaObjetivoEnum } from "@/api/clients";
 import Cuerpo from "@/components/ui/cuerpo";
 import PantallaObjetivos from "@/pantallas/objetivos/pantalla-objetivos";
-import { useState } from "react";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 type PeriodoObjetivo = "hoy" | "semana" | "mes" | "anio" | "lustro";
@@ -22,12 +23,25 @@ const PERIODOS: OpcionPeriodo[] = [
 	{ clave: "lustro", etiqueta: "5 años", tipo: TipoListaObjetivoEnum._5 },
 ];
 
+const esPeriodoValido = (v: string | undefined): v is PeriodoObjetivo =>
+	v !== undefined && PERIODOS.some((o) => o.clave === v);
+
 /**
  * Tab "objetivos": funciona como una mini-app aparte, con su propia
  * navegación por período arriba (reemplaza la top-bar de "/" + lupa + "+").
  */
 export default function ObjetivosTab() {
-	const [periodo, setPeriodo] = useState<PeriodoObjetivo>("hoy");
+	// `periodo` puede venir de un deep link de los widgets de iOS
+	// (`noctiluca:///objetivos?periodo=semana`), si no arranca en "hoy".
+	const { periodo: periodoParam } = useLocalSearchParams<{ periodo?: string }>();
+	const [periodo, setPeriodo] = useState<PeriodoObjetivo>(
+		esPeriodoValido(periodoParam) ? periodoParam : "hoy",
+	);
+
+	useEffect(() => {
+		if (esPeriodoValido(periodoParam)) setPeriodo(periodoParam);
+	}, [periodoParam]);
+
 	const opcionActual = PERIODOS.find((o) => o.clave === periodo) ?? PERIODOS[0];
 
 	return (
