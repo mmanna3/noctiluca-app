@@ -1,7 +1,6 @@
 import { Boton } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
-import { Input } from "@/components/ui/input-ui";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import useNavegacion from "@/use-navegacion";
 import { useCarpeta } from "@/sync/lecturas";
@@ -48,9 +47,11 @@ export default function NuevoEscrito() {
 				</Boton>
 			</Encabezado>
 			<Cuerpo className="flex-1">
-				<Input
+				<TextInput
 					value={titulo}
-					onChange={setTitulo}
+					onChangeText={setTitulo}
+					placeholder="Título"
+					className="text-xl font-semibold text-slate-900 py-2 mb-2"
 				/>
 				<View className="pt-4 flex-1">
 					<TextInput

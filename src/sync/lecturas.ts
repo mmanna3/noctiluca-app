@@ -1,4 +1,5 @@
 import { CarpetaDTO, EscritoDTO, ListaObjetivoDTO, TipoListaObjetivoEnum } from "@/api/clients";
+import { buscarEscritosDesde } from "./busqueda-core";
 import { carpetasDb, escritosDb, habitosDb, itemsObjetivoDb, listasObjetivoDb, registrosHabitoDb } from "./db";
 import {
 	aEscritoDTO,
@@ -42,6 +43,19 @@ export const useCarpeta = (idOClientId: number | string | undefined): CarpetaDTO
 /** Todas las carpetas locales (crudas), para evaluar accesos a carpetas privadas. */
 export const useTodasLasCarpetasLocal = (): CarpetaLocal[] | undefined =>
 	useLiveQuery(() => carpetasDb.todas(), []);
+
+/**
+ * Busca escritos vigentes en la base local (título + cuerpo), ignorando
+ * mayúsculas y acentos (ver `normalizarTextoBusqueda` en `busqueda-core.ts`).
+ * `activa` evita reconsultar SQLite en cada tecla antes del mínimo de
+ * caracteres (ver `MINIMO_CARACTERES_BUSQUEDA` en `utils/busqueda.ts`).
+ */
+export const useBuscarEscritos = (consulta: string, activa: boolean): EscritoDTO[] | undefined =>
+	useLiveQuery(async () => {
+		if (!activa) return [];
+		const [carpetas, escritos] = await Promise.all([carpetasDb.todas(), escritosDb.todos()]);
+		return buscarEscritosDesde(carpetas, escritos, consulta);
+	}, [consulta, activa]);
 
 /** Id (servidor o clientId) de la carpeta de sistema con un propósito dado. */
 export const useCarpetaPorProposito = (proposito: number): number | string | undefined =>

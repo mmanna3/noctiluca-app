@@ -1,14 +1,10 @@
-import { api } from "@/api/api";
-import { EscritoDTO } from "@/api/clients";
-import { queryKeys } from "@/api/query-keys";
-import useApiQuery from "@/api/custom-hooks/use-api-query";
 import { Boton } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import { Input } from "@/components/ui/input-ui";
 import ListaItem from "@/components/ui/lista-item";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import useNavegacion from "@/use-navegacion";
+import { useBuscarEscritos } from "@/sync/lecturas";
 import { MINIMO_CARACTERES_BUSQUEDA } from "@/utils/busqueda";
 import { useEffect, useState } from "react";
 import { FlatList, Text, View } from "react-native";
@@ -28,13 +24,11 @@ export default function BuscarEscritos() {
 
 	const busquedaActiva = textoDebounced.length >= MINIMO_CARACTERES_BUSQUEDA;
 
-	const { data, isLoading } = useApiQuery({
-		key: queryKeys.buscarEscritos(textoDebounced),
-		fn: () => api.buscar(textoDebounced),
-		activado: busquedaActiva,
-	});
-
-	const resultados: EscritoDTO[] = data ?? [];
+	// Búsqueda local (offline-first): ignora mayúsculas y acentos, ver
+	// `normalizarTextoBusqueda` en `sync/busqueda-core.ts`.
+	const resultadosRaw = useBuscarEscritos(textoDebounced, busquedaActiva);
+	const isLoading = busquedaActiva && resultadosRaw === undefined;
+	const resultados = resultadosRaw ?? [];
 
 	return (
 		<View className="flex-1">
@@ -54,12 +48,6 @@ export default function BuscarEscritos() {
 				{!busquedaActiva && (
 					<View className="flex-1 justify-center items-center">
 						<Text className="text-sm text-gray-400">Escribí al menos {MINIMO_CARACTERES_BUSQUEDA} caracteres</Text>
-					</View>
-				)}
-
-				{busquedaActiva && isLoading && (
-					<View className="flex-1 justify-center items-center">
-						<LoadingSpinner />
 					</View>
 				)}
 

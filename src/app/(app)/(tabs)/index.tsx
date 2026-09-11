@@ -1,5 +1,5 @@
 import { CarpetaDTO } from "@/api/clients";
-import { Boton, BotonIcono } from "@/components/ui/botones";
+import { Boton } from "@/components/ui/botones";
 import Cuerpo from "@/components/ui/cuerpo";
 import Encabezado from "@/components/ui/encabezado";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -8,7 +8,7 @@ import useNavegacion from "@/use-navegacion";
 import HabitTrackerHome from "@/pantallas/habitos/habit-tracker-home";
 import { useCarpetasRaiz } from "@/sync/lecturas";
 import { esCarpetaObjetivos } from "@/utils/objetivos";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 const subtituloCarpeta = (c: CarpetaDTO): string => {
@@ -18,7 +18,7 @@ const subtituloCarpeta = (c: CarpetaDTO): string => {
 };
 
 export default function Inicio() {
-	const { irANuevaCarpeta, irAHabitos, irABuscarEscritos, verEscritosDeLaCarpeta } = useNavegacion();
+	const { irAHabitos, irABuscarEscritos, verEscritosDeLaCarpeta } = useNavegacion();
 
 	const data = useCarpetasRaiz();
 
@@ -40,18 +40,12 @@ export default function Inicio() {
 				<Boton soloBorde onClick={irAHabitos}>
 					/
 				</Boton>
-				<View className="flex-row items-center gap-1">
-					<Boton soloBorde onClick={irABuscarEscritos}>
-						<Ionicons name="search-outline" size={20} color="#0f172a" />
-					</Boton>
-					<BotonIcono onClick={irANuevaCarpeta}>
-						<Ionicons name="add" size={28} color="white" />
-					</BotonIcono>
-				</View>
+				<Boton soloBorde onClick={irABuscarEscritos}>
+					<Ionicons name="search-outline" size={20} color="#0f172a" />
+				</Boton>
 			</Encabezado>
 			<Cuerpo className="flex-1">
 				<HabitTrackerHome onVerTodos={irAHabitos} />
-				<Text className="text-sm font-semibold text-slate-800 mb-2">Carpetas</Text>
 				<FlatList
 					data={carpetasRaiz}
 					keyExtractor={(item) => String(item.id ?? item.clientId ?? item.titulo)}
