@@ -3,7 +3,7 @@ import Cuerpo from "@/components/ui/cuerpo";
 import PantallaObjetivos from "@/pantallas/objetivos/pantalla-objetivos";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 type PeriodoObjetivo = "hoy" | "semana" | "mes" | "anio" | "lustro";
 
@@ -62,9 +62,16 @@ export default function ObjetivosTab() {
 					);
 				})}
 			</View>
-			<Cuerpo className="flex-1">
-				<PantallaObjetivos key={opcionActual.clave} tipo={opcionActual.tipo} />
-			</Cuerpo>
+			<ScrollView
+				style={{ flex: 1 }}
+				contentContainerStyle={{ flexGrow: 1 }}
+				keyboardShouldPersistTaps="handled"
+				automaticallyAdjustKeyboardInsets
+			>
+				<Cuerpo>
+					<PantallaObjetivos key={opcionActual.clave} tipo={opcionActual.tipo} />
+				</Cuerpo>
+			</ScrollView>
 		</View>
 	);
 }

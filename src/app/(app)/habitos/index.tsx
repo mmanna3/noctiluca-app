@@ -10,7 +10,9 @@ import { Ionicons } from "@expo/vector-icons";
 /**
  * Menú accedido desde el botón "/" del home. Antes duplicaba el tracker de
  * hábitos (ya está en el home) y tenía sus accesos sueltos arriba/abajo; ahora
- * es solo una lista de accesos rápidos como "pastillas".
+ * es una grilla de 2 columnas de accesos rápidos. El último (impar) queda
+ * solo en su fila, ocupando la misma media columna que los demás (no todo el
+ * ancho) gracias a `flex-wrap` + `justify-between`.
  */
 export default function MenuScreen() {
 	const { irAlInicio, irAAdministrarHabitos, irAResumenHabitos, irANuevaCarpeta, irAPapelera, irALogin } =
@@ -29,31 +31,33 @@ export default function MenuScreen() {
 				</Boton>
 			</Encabezado>
 			<Cuerpo className="flex-1">
-				<PastillaAcceso
-					icono={<Ionicons name="settings-outline" size={20} color="#0f172a" />}
-					etiqueta="Hábitos"
-					onClick={irAAdministrarHabitos}
-				/>
-				<PastillaAcceso
-					icono={<Ionicons name="bar-chart-outline" size={20} color="#0f172a" />}
-					etiqueta="Resumen Semanal"
-					onClick={irAResumenHabitos}
-				/>
-				<PastillaAcceso
-					icono={<Ionicons name="add" size={20} color="#0f172a" />}
-					etiqueta="Nueva carpeta"
-					onClick={irANuevaCarpeta}
-				/>
-				<PastillaAcceso
-					icono={<Ionicons name="trash-outline" size={20} color="#0f172a" />}
-					etiqueta="Tacho"
-					onClick={irAPapelera}
-				/>
-				<PastillaAcceso
-					icono={<Ionicons name="close" size={20} color="#0f172a" />}
-					etiqueta="Cerrar sesión"
-					onClick={cerrarSesion}
-				/>
+				<View className="flex-row flex-wrap justify-between">
+					<PastillaAcceso
+						icono={<Ionicons name="settings-outline" size={22} color="#0f172a" />}
+						etiqueta="Hábitos"
+						onClick={irAAdministrarHabitos}
+					/>
+					<PastillaAcceso
+						icono={<Ionicons name="bar-chart-outline" size={22} color="#0f172a" />}
+						etiqueta="Resumen Semanal"
+						onClick={irAResumenHabitos}
+					/>
+					<PastillaAcceso
+						icono={<Ionicons name="add" size={22} color="#0f172a" />}
+						etiqueta="Nueva carpeta"
+						onClick={irANuevaCarpeta}
+					/>
+					<PastillaAcceso
+						icono={<Ionicons name="trash-outline" size={22} color="#0f172a" />}
+						etiqueta="Tacho"
+						onClick={irAPapelera}
+					/>
+					<PastillaAcceso
+						icono={<Ionicons name="close" size={22} color="#0f172a" />}
+						etiqueta="Cerrar sesión"
+						onClick={cerrarSesion}
+					/>
+				</View>
 			</Cuerpo>
 		</View>
 	);
@@ -69,10 +73,10 @@ function PastillaAcceso({ icono, etiqueta, onClick }: PastillaAccesoProps) {
 	return (
 		<TouchableOpacity
 			onPress={onClick}
-			className="flex-row items-center gap-3 px-4 py-3 mb-2 border border-gray-200 rounded-full"
+			className="w-[48%] items-center justify-center gap-2 py-5 mb-3 border border-gray-200 rounded"
 		>
 			{icono}
-			<Text className="text-sm font-medium text-slate-900">{etiqueta}</Text>
+			<Text className="text-sm font-medium text-slate-900 text-center">{etiqueta}</Text>
 		</TouchableOpacity>
 	);
 }

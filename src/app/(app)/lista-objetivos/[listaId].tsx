@@ -6,7 +6,7 @@ import EditorListaObjetivos from "@/pantallas/objetivos/editor-lista-objetivos";
 import useNavegacion from "@/use-navegacion";
 import { useListaObjetivosPorId } from "@/sync/lecturas";
 import { etiquetaPeriodo } from "@/utils/objetivos";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function ListaObjetivos() {
@@ -38,13 +38,20 @@ export default function ListaObjetivos() {
 					 /objetivos
 				</Boton>
 			</Encabezado>
-			<Cuerpo className="flex-1">
-				<EditorListaObjetivos
-					tipo={data.tipo}
-					clavePeriodo={data.clavePeriodo}
-					titulo={etiquetaPeriodo(data.tipo, data.clavePeriodo, data.fechaInicio, data.fechaFin)}
-				/>
-			</Cuerpo>
+			<ScrollView
+				style={{ flex: 1 }}
+				contentContainerStyle={{ flexGrow: 1 }}
+				keyboardShouldPersistTaps="handled"
+				automaticallyAdjustKeyboardInsets
+			>
+				<Cuerpo>
+					<EditorListaObjetivos
+						tipo={data.tipo}
+						clavePeriodo={data.clavePeriodo}
+						titulo={etiquetaPeriodo(data.tipo, data.clavePeriodo, data.fechaInicio, data.fechaFin)}
+					/>
+				</Cuerpo>
+			</ScrollView>
 		</View>
 	);
 }

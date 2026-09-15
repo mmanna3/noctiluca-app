@@ -8,4 +8,31 @@
     font-size: 18px;
     letter-spacing: 0.3px;
   }
+
+  /*
+   * Solo afecta al navegador (RN no tiene elemento <html>, así que esta regla
+   * es un no-op ahí): la unidad `rem` de Tailwind siempre se resuelve contra
+   * el font-size del <html>. Sin esto, el `font-size: 18px` de arriba (pensado
+   * como tamaño base para mobile) también quedaba fijado en el <html>, y
+   * TODOS los tamaños en rem del web (tipografía, paddings, max-width, etc.)
+   * se inflaban un 18/14 ≈ 28% de más comparado con la app nativa, que usa
+   * rem=14 (`inlineRem` en metro.config.js). Bajarlo acá a 14 empareja el web
+   * con cómo ya se ve la app en el iPhone.
+   */
+  html {
+    font-size: 14px;
+  }
+
+  /*
+   * En web, `TextInput` de RN renderiza un <input>/<textarea> real (ver
+   * react-native-web), y el navegador le dibuja su anillo de foco azul por
+   * defecto (Chrome/Safari) al enfocarlo — se ve al escribir el título o el
+   * cuerpo de un escrito. No hay <input>/<textarea> en RN nativo, así que
+   * esto tampoco es un no-op ahí. Se deja el cursor de texto (caret), solo se
+   * saca el recuadro de foco.
+   */
+  input,
+  textarea {
+    outline: none;
+  }
 }
