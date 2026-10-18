@@ -1,4 +1,5 @@
 import * as SQLite from "expo-sqlite";
+import { prepararApertura, reportarFalloApertura } from "./apertura-base";
 import { nuevoId } from "./ids";
 import {
 	CarpetaLocal,
@@ -113,11 +114,24 @@ const ESQUEMA = `
 
 let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
+const abrirDb = async (): Promise<SQLite.SQLiteDatabase> => {
+	await prepararApertura();
+	try {
+		const db = await SQLite.openDatabaseAsync("noctiluca.db");
+		await db.execAsync(ESQUEMA);
+		return db;
+	} catch (error) {
+		reportarFalloApertura(error);
+		throw error;
+	}
+};
+
 const obtenerDb = (): Promise<SQLite.SQLiteDatabase> => {
 	if (!dbPromise) {
-		dbPromise = SQLite.openDatabaseAsync("noctiluca.db").then(async (db) => {
-			await db.execAsync(ESQUEMA);
-			return db;
+		// No cachear un fallo: la próxima lectura vuelve a intentar.
+		dbPromise = abrirDb().catch((error) => {
+			dbPromise = null;
+			throw error;
 		});
 	}
 	return dbPromise;

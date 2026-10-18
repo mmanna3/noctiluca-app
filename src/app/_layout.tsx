@@ -9,6 +9,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { iniciarSync } from "@/sync/sync-engine";
 import { useAuth } from "@/hooks/use-auth";
+import { GuardBaseLocal } from "@/components/guard-base-local";
 import { useFonts, Merriweather_400Regular, Merriweather_700Bold } from "@expo-google-fonts/merriweather";
 
 SplashScreen.preventAutoHideAsync();
@@ -55,7 +56,9 @@ export default function RootLayout() {
 				<QueryClientProvider client={queryClient}>
 					<AuthHydrator />
 					<SyncInitializer />
-					<Stack screenOptions={{ headerShown: false, gestureEnabled: true }} />
+					<GuardBaseLocal>
+						<Stack screenOptions={{ headerShown: false, gestureEnabled: true }} />
+					</GuardBaseLocal>
 					<Toast />
 				</QueryClientProvider>
 			</SafeAreaProvider>
