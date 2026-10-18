@@ -16,11 +16,13 @@
    * como tamaño base para mobile) también quedaba fijado en el <html>, y
    * TODOS los tamaños en rem del web (tipografía, paddings, max-width, etc.)
    * se inflaban un 18/14 ≈ 28% de más comparado con la app nativa, que usa
-   * rem=14 (`inlineRem` en metro.config.js). Bajarlo acá a 14 empareja el web
-   * con cómo ya se ve la app en el iPhone.
+   * rem=14 (`inlineRem` en metro.config.js). Bajarlo acá empareja el web con
+   * cómo ya se ve la app en el iPhone. Es 14.2222 y no 14 para que el cuerpo
+   * (`text-base` = 1.125rem) quede en 16px exactos, como en noctiluca-fe; el
+   * resto de las medidas crece apenas un 1.6%.
    */
   html {
-    font-size: 14px;
+    font-size: 14.2222px;
   }
 
   /*

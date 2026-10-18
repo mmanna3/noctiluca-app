@@ -8,7 +8,7 @@ export default function AppLayout() {
 	return (
 		<RequiereAutenticacion>
 			<SafeAreaView className="flex-1 bg-white" edges={["top", "bottom"]}>
-				<View className="flex-1 px-5 max-w-2xl w-full self-center">
+				<View className="flex-1 px-5 max-w-2xl md:max-w-4xl md:px-8 w-full self-center">
 					<IndicadorSync />
 					<View className="flex-1 pt-1">
 						<Slot />

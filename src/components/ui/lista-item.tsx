@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 interface IProps {
 	titulo: string;
@@ -19,12 +19,12 @@ function parseISOStringtoddMMyy(dateString: string) {
 
 const ListaItem = (props: IProps) => {
 	return (
-		<TouchableOpacity
-			className="px-2 py-3 border-b border-gray-200"
+		<Pressable
+			className="px-2 py-3 border-b border-gray-200 hover:bg-gray-100 active:opacity-20 web:cursor-pointer"
 			onPress={props.onClick}
 		>
 			{props.fecha && (
-				<Text className="text-xs text-gray-400 pb-1">
+				<Text className="text-xs web:text-sm text-gray-400 pb-1">
 					{parseISOStringtoddMMyy(props.fecha)}
 				</Text>
 			)}
@@ -33,7 +33,7 @@ const ListaItem = (props: IProps) => {
 				<Text className="text-base text-slate-900">{props.titulo}</Text>
 			</View>
 			<Text className="text-sm text-gray-500">{props.subtitulo}</Text>
-		</TouchableOpacity>
+		</Pressable>
 	);
 };
 

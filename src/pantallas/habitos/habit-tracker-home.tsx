@@ -46,7 +46,7 @@ export default function HabitTrackerHome({ onVerTodos }: Props) {
 							onPress={() => setDiaSeleccionado(new Date(dia))}
 							className={`flex-1 items-center py-1 rounded-md ${seleccionado ? "bg-slate-900" : esHoy ? "bg-slate-100" : ""}`}
 						>
-							<Text className={`text-[10px] ${seleccionado ? "text-white" : "text-gray-500"}`}>
+							<Text className={`text-[10px] web:text-xs ${seleccionado ? "text-white" : "text-gray-500"}`}>
 								{nombreDiaCorto(dia)}
 							</Text>
 							<Text className={`text-xs font-medium ${seleccionado ? "text-white" : "text-slate-900"}`}>

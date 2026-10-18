@@ -46,10 +46,10 @@ const IndicadorSync = () => {
 				accessibilityLabel={`Estado de sincronización: ${etiqueta}. Tocá para sincronizar.`}
 				className={`flex-row items-center gap-1.5 ${guardando ? "opacity-80" : ""}`}
 			>
-				<Text className={`text-xs ${claseTexto}`}>{etiqueta}</Text>
+				<Text className={`text-xs web:text-sm ${claseTexto}`}>{etiqueta}</Text>
 				{pendientes > 0 && (
 					<View className="min-w-[1.125rem] rounded-full bg-amber-100 px-1 items-center justify-center">
-						<Text className="text-amber-800 text-[10px] font-medium leading-4 text-center">
+						<Text className="text-amber-800 text-[10px] web:text-xs font-medium leading-4 text-center">
 							{pendientes > 99 ? "99+" : pendientes}
 						</Text>
 					</View>
