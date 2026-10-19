@@ -11,7 +11,7 @@ import {
 	reordenarItemsObjetivoLocal,
 	toggleItemObjetivoLocal,
 } from "@/sync/repositorio-objetivos";
-import { esClaveDiaFutura } from "@/utils/objetivos";
+import { esClaveDiaFutura, esClaveSemanaFutura } from "@/utils/objetivos";
 import { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { Text, TextInput } from "@/components/ui/texto";
@@ -39,7 +39,9 @@ export default function EditorListaObjetivos({ tipo, clavePeriodo, titulo, maxVi
 	const items = data?.items ?? [];
 	const itemsVisibles = maxVisibles !== undefined ? items.slice(0, maxVisibles) : items;
 	const hayMas = maxVisibles !== undefined && items.length > maxVisibles;
-	const soloLecturaCompletado = tipo === TipoListaObjetivoEnum._1 && esClaveDiaFutura(clavePeriodo);
+	const soloLecturaCompletado =
+		(tipo === TipoListaObjetivoEnum._1 && esClaveDiaFutura(clavePeriodo)) ||
+		(tipo === TipoListaObjetivoEnum._2 && esClaveSemanaFutura(clavePeriodo));
 
 	const agregar = async () => {
 		if (!nuevoTexto.trim() || creando) return;

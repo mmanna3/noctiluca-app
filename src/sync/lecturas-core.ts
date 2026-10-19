@@ -7,6 +7,7 @@ import {
 	TipoHabitoEnum,
 	TipoListaObjetivoEnum,
 } from "@/api/clients";
+import { claveSemana } from "@/utils/objetivos";
 import { fechaClave, parsearFechaClave } from "./fechas";
 import {
 	CarpetaLocal,
@@ -323,4 +324,35 @@ export const diasObjetivosFuturosDesde = (
 			cantidad,
 		}))
 		.sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
+};
+
+export interface SemanaObjetivoFutura {
+	clavePeriodo: string;
+	cantidad: number;
+}
+
+/**
+ * Semanas posteriores a la de `referencia` con al menos un objetivo con texto.
+ * Las claves ISO (`YYYY-Www`, semana con dos dígitos) se ordenan bien como texto.
+ */
+export const semanasObjetivosFuturasDesde = (
+	items: ItemObjetivoLocal[],
+	referencia = new Date(),
+): SemanaObjetivoFutura[] => {
+	const claveActual = claveSemana(referencia);
+
+	const porClave = new Map<string, number>();
+	for (const item of items) {
+		if (item.listaTipo !== TipoListaObjetivoEnum._2) continue;
+		if (!(item.texto ?? "").trim()) continue;
+		if (item.listaClavePeriodo <= claveActual) continue;
+		porClave.set(
+			item.listaClavePeriodo,
+			(porClave.get(item.listaClavePeriodo) ?? 0) + 1,
+		);
+	}
+
+	return [...porClave.entries()]
+		.map(([clavePeriodo, cantidad]) => ({ clavePeriodo, cantidad }))
+		.sort((a, b) => a.clavePeriodo.localeCompare(b.clavePeriodo));
 };

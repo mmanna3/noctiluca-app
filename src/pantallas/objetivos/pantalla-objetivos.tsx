@@ -2,7 +2,7 @@ import { TipoListaObjetivoEnum } from "@/api/clients";
 import { TouchableOpacity, View } from "react-native";
 import { Text } from "@/components/ui/texto";
 import EditorListaObjetivos from "./editor-lista-objetivos";
-import PlanificacionObjetivosDia from "./planificacion-objetivos-dia";
+import PlanificacionObjetivos, { sePuedePlanificar } from "./planificacion-objetivos";
 import useNavegacion from "@/use-navegacion";
 import { clavePeriodoActual, tituloPeriodoActual } from "@/utils/objetivos";
 
@@ -24,7 +24,7 @@ export default function PantallaObjetivos({ tipo }: Props) {
 	return (
 		<View className="flex-1">
 			<EditorListaObjetivos tipo={tipo} clavePeriodo={claveActual} titulo={tituloActual} />
-			{esObjetivosDia && <PlanificacionObjetivosDia />}
+			{sePuedePlanificar(tipo) && <PlanificacionObjetivos key={tipo} tipo={tipo} />}
 			<TouchableOpacity onPress={() => irAHistoricoObjetivos(tipo)}>
 				<Text className="text-xs text-gray-500 uppercase tracking-wide">Ver histórico →</Text>
 			</TouchableOpacity>

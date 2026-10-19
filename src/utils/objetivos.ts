@@ -90,6 +90,10 @@ const formatearDiaCorto = (fecha: Date): string =>
 const etiquetaSemana = (clave: string, inicio?: Date, fin?: Date): string => {
 	const partes = clave.split("-W");
 	const numero = partes[1] ?? "";
+	if ((!inicio || !fin) && /^\d{4}-W\d{2}$/.test(clave)) {
+		// La lista local puede no tener fechas todavía (p. ej. una semana futura sin sincronizar).
+		({ inicio, fin } = rangoSemanaDesdeClave(clave));
+	}
 	if (inicio && fin) {
 		const fmt = (f: Date) =>
 			f.toLocaleDateString("es-AR", { day: "numeric", month: "short" });
@@ -156,6 +160,41 @@ export const rangoSemanaActual = (fecha = new Date()) => ({
 	inicio: inicioDeSemana(fecha),
 	fin: finDeSemana(fecha),
 });
+
+/**
+ * Inverso de `claveSemana`: lunes y domingo (locales) de la semana ISO `YYYY-Www`.
+ * Mismo cálculo que `ObjetivoPeriodoUtil.ParsearClaveSemana` en el backend.
+ */
+export const rangoSemanaDesdeClave = (clave: string): { inicio: Date; fin: Date } => {
+	const [anio, semana] = clave.split("-W").map(Number);
+	// El 4 de enero siempre cae en la semana 1 ISO.
+	const lunesSemana1 = inicioDeSemana(new Date(anio, 0, 4));
+	const inicio = sumarDias(lunesSemana1, (semana - 1) * 7);
+	return { inicio, fin: sumarDias(inicio, 6) };
+};
+
+/** Lunes de la semana de `fecha` desplazado `semanas` semanas. */
+export const sumarSemanas = (fecha: Date, semanas: number): Date =>
+	sumarDias(inicioDeSemana(fecha), semanas * 7);
+
+/** Lunes de la semana siguiente: la primera semana que se puede planificar. */
+export const fechaMinimaPlanificacionSemana = (referencia = new Date()): Date =>
+	sumarSemanas(referencia, 1);
+
+export const esClaveSemanaFutura = (clavePeriodo: string, referencia = new Date()): boolean =>
+	clavePeriodo > claveSemana(referencia);
+
+export const etiquetaSemanaRelativa = (fecha: Date, referencia = new Date()): string => {
+	const diffDias = Math.round(
+		(inicioDeSemana(fecha).getTime() - inicioDeSemana(referencia).getTime()) / 86400000,
+	);
+	const diffSemanas = Math.round(diffDias / 7);
+	if (diffSemanas === 0) return "Esta semana";
+	if (diffSemanas === 1) return "Próxima semana";
+	if (diffSemanas > 1) return `En ${diffSemanas} semanas`;
+	const { inicio, fin } = rangoSemanaActual(fecha);
+	return `${formatearDiaCorto(inicio)}–${formatearDiaCorto(fin)}`;
+};
 
 const obtenerSemanaIso = (fecha: Date): number => {
 	const copia = new Date(Date.UTC(fecha.getFullYear(), fecha.getMonth(), fecha.getDate()));

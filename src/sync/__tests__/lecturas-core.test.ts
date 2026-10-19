@@ -5,6 +5,7 @@ import {
 	carpetasRaizDesde,
 	claveDeItem,
 	diasObjetivosFuturosDesde,
+	semanasObjetivosFuturasDesde,
 	listaObjetivosDesde,
 	ordenarEscritos,
 	papeleraDesde,
@@ -287,6 +288,36 @@ describe("diasObjetivosFuturosDesde", () => {
 		expect(dias).toHaveLength(2);
 		expect(dias[0]).toMatchObject({ clavePeriodo: "2026-07-06", cantidad: 2 });
 		expect(dias[1]).toMatchObject({ clavePeriodo: "2026-07-15", cantidad: 1 });
+	});
+});
+
+describe("semanasObjetivosFuturasDesde", () => {
+	const item = (clientId: string, clave: string, texto = "Objetivo", tipo = TipoListaObjetivoEnum._2): ItemObjetivoLocal => ({
+		clientId,
+		texto,
+		completado: false,
+		posicion: 0,
+		listaTipo: tipo,
+		listaClavePeriodo: clave,
+		version: 1,
+	});
+
+	test("agrupa semanas posteriores a la actual con texto, ordenadas", () => {
+		const domingo = new Date(2026, 9, 25); // último día de 2026-W43
+		const items = [
+			item("actual", "2026-W43"),
+			item("pasada", "2026-W40"),
+			item("a1", "2027-W01"),
+			item("b1", "2026-W44"),
+			item("b2", "2026-W44"),
+			item("vacio", "2026-W45", " "),
+			item("dia", "2026-10-30", "Día", TipoListaObjetivoEnum._1),
+		];
+
+		expect(semanasObjetivosFuturasDesde(items, domingo)).toEqual([
+			{ clavePeriodo: "2026-W44", cantidad: 2 },
+			{ clavePeriodo: "2027-W01", cantidad: 1 },
+		]);
 	});
 });
 

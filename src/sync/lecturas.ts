@@ -12,6 +12,8 @@ import {
 	historicoObjetivosDesde,
 	listaObjetivosDesde,
 	listaObjetivosPorIdDesde,
+	SemanaObjetivoFutura,
+	semanasObjetivosFuturasDesde,
 	TrackerHabitoView,
 	trackerDiaDesde,
 } from "./lecturas-core";
@@ -105,6 +107,10 @@ export const useListaObjetivosPorId = (listaId: number | undefined): ListaObjeti
 /** Días futuros con al menos un objetivo planificado (offline-first). */
 export const useDiasObjetivosFuturos = (): DiaObjetivoFuturo[] | undefined =>
 	useLiveQuery(async () => diasObjetivosFuturosDesde(await itemsObjetivoDb.todos()), []);
+
+/** Semanas futuras con al menos un objetivo planificado (offline-first). */
+export const useSemanasObjetivosFuturas = (): SemanaObjetivoFutura[] | undefined =>
+	useLiveQuery(async () => semanasObjetivosFuturasDesde(await itemsObjetivoDb.todos()), []);
 
 /** Histórico de períodos con objetivos para un tipo (día/semana/mes), offline-first. */
 export const useHistoricoObjetivos = (tipo: TipoListaObjetivoEnum | undefined): HistoricoObjetivoResumen[] | undefined =>
