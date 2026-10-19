@@ -8,7 +8,8 @@ import { autenticarConBiometria, biometriaDisponible } from "@/hooks/use-biometr
 import { registrarSesionTrasPassword, useSesionPrivada } from "@/hooks/use-sesion-privada";
 import { etiquetaMotivoSesionPrivada, MotivoSesionPrivada } from "@/privacidad/privacidad-core";
 import { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
+import { Text } from "@/components/ui/texto";
 import NetInfo from "@react-native-community/netinfo";
 import { Ionicons } from "@expo/vector-icons";
 

@@ -2,7 +2,8 @@ import { Boton } from "@/components/ui/botones";
 import { iniciarCandadoBase, usarBaseAca } from "@/sync/apertura-base";
 import { useCandadoBase } from "@/sync/candado-base-core";
 import { ReactNode, useEffect } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { Text } from "@/components/ui/texto";
 
 /**
  * En web, solo una pestaña puede usar la base local (ver `candado-base-core.ts`).

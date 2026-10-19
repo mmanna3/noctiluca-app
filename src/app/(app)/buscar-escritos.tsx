@@ -7,7 +7,8 @@ import useNavegacion from "@/use-navegacion";
 import { useBuscarEscritos } from "@/sync/lecturas";
 import { MINIMO_CARACTERES_BUSQUEDA } from "@/utils/busqueda";
 import { useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
+import { Text } from "@/components/ui/texto";
 import { Ionicons } from "@expo/vector-icons";
 
 const DEBOUNCE_MS = 300;

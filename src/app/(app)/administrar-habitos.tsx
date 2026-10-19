@@ -12,7 +12,8 @@ import useNavegacion from "@/use-navegacion";
 import { esHabitoNumerico, MAX_HABITOS_ACTIVOS } from "@/pantallas/habitos/utilidades-habitos";
 import { validarHabito } from "@/utils/validar-habito";
 import { useState } from "react";
-import { FlatList, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { FlatList, Switch, TouchableOpacity, View } from "react-native";
+import { Text, TextInput } from "@/components/ui/texto";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 

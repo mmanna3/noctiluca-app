@@ -7,7 +7,8 @@ import useNavegacion from "@/use-navegacion";
 import { useEscrito } from "@/sync/lecturas";
 import { cambiarPapeleraLocal } from "@/sync/repositorio-escritos";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, TextInput, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { Text, TextInput } from "@/components/ui/texto";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -95,7 +96,7 @@ export default function VerEscrito() {
 					value={titulo}
 					onChangeText={setTitulo}
 					placeholder="Título"
-					className="text-xl font-semibold text-slate-900 py-2 mb-2"
+					className="font-serif tracking-[0.4px] text-xl font-semibold text-slate-900 py-2 mb-2"
 				/>
 				<TextInput
 					value={cuerpo}
@@ -103,7 +104,7 @@ export default function VerEscrito() {
 					placeholder="Texto"
 					multiline
 					textAlignVertical="top"
-					className="flex-1 text-base text-slate-900"
+					className="font-serif tracking-[0.4px] flex-1 text-base text-slate-900"
 				/>
 			</Cuerpo>
 		</ScrollView>

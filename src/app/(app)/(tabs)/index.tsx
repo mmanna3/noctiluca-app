@@ -52,6 +52,7 @@ export default function Inicio() {
 					renderItem={({ item }) => (
 						<ListaItem
 							titulo={item.titulo ?? ""}
+							tituloEspaciado
 							subtitulo={subtituloCarpeta(item)}
 							icono={
 								item.requiereAutenticacion ? (

@@ -1,5 +1,6 @@
 import { TipoListaObjetivoEnum } from "@/api/clients";
-import { Text, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import { Text } from "@/components/ui/texto";
 import EditorListaObjetivos from "./editor-lista-objetivos";
 import PlanificacionObjetivosDia from "./planificacion-objetivos-dia";
 import useNavegacion from "@/use-navegacion";

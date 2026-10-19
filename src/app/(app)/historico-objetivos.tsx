@@ -9,7 +9,8 @@ import { useHistoricoObjetivos } from "@/sync/lecturas";
 import { HistoricoObjetivoResumen } from "@/sync/lecturas-core";
 import { etiquetaPeriodo, inicioDeDiaLocal } from "@/utils/objetivos";
 import { useLocalSearchParams } from "expo-router";
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import { Text } from "@/components/ui/texto";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function HistoricoObjetivos() {

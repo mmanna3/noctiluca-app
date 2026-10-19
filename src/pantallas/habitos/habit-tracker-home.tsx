@@ -5,7 +5,8 @@ import { useTrackerDia } from "@/sync/lecturas";
 import { TrackerHabitoView } from "@/sync/lecturas-core";
 import { guardarRegistroHabitoLocal } from "@/sync/repositorio-habitos";
 import { useEffect, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import { Text, TextInput } from "@/components/ui/texto";
 import { diasDeSemana, esMismaFecha, inicioDeSemana, nombreDiaCorto } from "./utilidades-habitos";
 
 interface Props {

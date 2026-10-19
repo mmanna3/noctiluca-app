@@ -2,7 +2,8 @@ import { TipoListaObjetivoEnum } from "@/api/clients";
 import { useDiasObjetivosFuturos } from "@/sync/lecturas";
 import { claveDia, etiquetaDiaRelativo, fechaManana, fechaMinimaPlanificacion, sumarDias } from "@/utils/objetivos";
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import { Text } from "@/components/ui/texto";
 import { Ionicons } from "@expo/vector-icons";
 import EditorListaObjetivos from "./editor-lista-objetivos";
 

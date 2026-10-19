@@ -35,6 +35,7 @@ assets/         # Íconos, splash, imágenes
 - Tabs (4 espacios), comillas dobles, punto y coma
 - Componentes: PascalCase; hooks: `usar-` o `use-` kebab-case; utils: kebab-case
 - `@/` es alias a `src/`
+- **Textos**: importar `Text` y `TextInput` de `@/components/ui/texto`, nunca de `react-native`. Así se aplica la tipografía: Instrument Sans por defecto, Source Serif 4 con `font-serif` (para el contenido de los escritos), y el peso de la clase `font-*` (ver el comentario en ese archivo).
 
 ## Backend
 

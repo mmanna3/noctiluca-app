@@ -10,7 +10,8 @@ import useNavegacion from "@/use-navegacion";
 import { fechaCalendarioLocal } from "@/sync/fechas";
 import { diasDeSemana, esHabitoNumerico, formatearFechaClave, inicioDeSemana, nombreDiaCorto } from "@/pantallas/habitos/utilidades-habitos";
 import { useMemo, useState } from "react";
-import { FlatList, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, ScrollView, TouchableOpacity, View } from "react-native";
+import { Text } from "@/components/ui/texto";
 import { Ionicons } from "@expo/vector-icons";
 
 const iconoEstado = (estado?: string): string => {

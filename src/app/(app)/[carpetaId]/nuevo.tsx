@@ -6,7 +6,8 @@ import useNavegacion from "@/use-navegacion";
 import { useCarpeta } from "@/sync/lecturas";
 import { crearEscritoLocal } from "@/sync/repositorio-escritos";
 import { useState } from "react";
-import { ScrollView, TextInput, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { TextInput } from "@/components/ui/texto";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function NuevoEscrito() {
@@ -51,7 +52,7 @@ export default function NuevoEscrito() {
 					value={titulo}
 					onChangeText={setTitulo}
 					placeholder="Título"
-					className="text-xl font-semibold text-slate-900 py-2 mb-2"
+					className="font-serif tracking-[0.4px] text-xl font-semibold text-slate-900 py-2 mb-2"
 				/>
 				<View className="pt-4 flex-1">
 					<TextInput
@@ -60,7 +61,7 @@ export default function NuevoEscrito() {
 						placeholder="Texto"
 						multiline
 						textAlignVertical="top"
-						className="flex-1 text-base text-slate-900 border-b border-gray-200 py-2"
+						className="font-serif tracking-[0.4px] flex-1 text-base text-slate-900 border-b border-gray-200 py-2"
 					/>
 				</View>
 			</Cuerpo>

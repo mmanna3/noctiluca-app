@@ -8,7 +8,8 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import useNavegacion from "@/use-navegacion";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { Text } from "@/components/ui/texto";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -68,8 +69,8 @@ export default function VerEscritoPapelera() {
 				</Boton>
 			</Encabezado>
 			<Cuerpo className="flex-1">
-				<Text className="text-xl font-semibold text-slate-900 mb-2">{data.titulo}</Text>
-				<Text className="text-base text-slate-700">{data.cuerpo}</Text>
+				<Text className="font-serif tracking-[0.4px] text-xl font-semibold text-slate-900 mb-2">{data.titulo}</Text>
+				<Text className="font-serif tracking-[0.4px] text-base text-slate-700">{data.cuerpo}</Text>
 			</Cuerpo>
 		</View>
 	);

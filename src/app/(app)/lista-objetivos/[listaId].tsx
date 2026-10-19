@@ -6,7 +6,8 @@ import EditorListaObjetivos from "@/pantallas/objetivos/editor-lista-objetivos";
 import useNavegacion from "@/use-navegacion";
 import { useListaObjetivosPorId } from "@/sync/lecturas";
 import { etiquetaPeriodo } from "@/utils/objetivos";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { Text } from "@/components/ui/texto";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function ListaObjetivos() {

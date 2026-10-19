@@ -1,11 +1,14 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { Text } from "@/components/ui/texto";
 
 interface IProps {
 	titulo: string;
 	subtitulo: string;
 	fecha?: string;
 	icono?: React.ReactNode;
+	/** Título con más espacio entre letras (se usa para los nombres de carpeta). */
+	tituloEspaciado?: boolean;
 	onClick: () => void;
 }
 
@@ -30,7 +33,7 @@ const ListaItem = (props: IProps) => {
 			)}
 			<View className="flex-row items-center gap-1.5">
 				{props.icono}
-				<Text className="text-base text-slate-900">{props.titulo}</Text>
+				<Text className={`text-base text-slate-900 ${props.tituloEspaciado ? "tracking-[0.4px]" : ""}`}>{props.titulo}</Text>
 			</View>
 			<Text className="text-sm text-gray-500">{props.subtitulo}</Text>
 		</Pressable>

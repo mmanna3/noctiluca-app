@@ -2,22 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * La tipografía no se define acá: un `*` no llega a los textos
+ * en nativo y en web pierde contra react-native-web. Ver
+ * `src/components/ui/texto.tsx`.
+ */
 @layer base {
-  * {
-    font-family: Merriweather_400Regular;
-    font-size: 18px;
-    letter-spacing: 0.3px;
-  }
-
   /*
    * Solo afecta al navegador (RN no tiene elemento <html>, así que esta regla
    * es un no-op ahí): la unidad `rem` de Tailwind siempre se resuelve contra
-   * el font-size del <html>. Sin esto, el `font-size: 18px` de arriba (pensado
-   * como tamaño base para mobile) también quedaba fijado en el <html>, y
-   * TODOS los tamaños en rem del web (tipografía, paddings, max-width, etc.)
-   * se inflaban un 18/14 ≈ 28% de más comparado con la app nativa, que usa
-   * rem=14 (`inlineRem` en metro.config.js). Bajarlo acá empareja el web con
-   * cómo ya se ve la app en el iPhone. Es 14.2222 y no 14 para que el cuerpo
+   * el font-size del <html>, y la app nativa usa rem=14 (`inlineRem` en
+   * metro.config.js). Fijarlo acá empareja el web con cómo se ve la app en el
+   * iPhone. Es 14.2222 y no 14 para que el cuerpo
    * (`text-base` = 1.125rem) quede en 16px exactos, como en noctiluca-fe; el
    * resto de las medidas crece apenas un 1.6%.
    */

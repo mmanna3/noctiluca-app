@@ -13,7 +13,8 @@ import {
 } from "@/sync/repositorio-objetivos";
 import { esClaveDiaFutura } from "@/utils/objetivos";
 import { useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import { Text, TextInput } from "@/components/ui/texto";
 import { Ionicons } from "@expo/vector-icons";
 
 interface Props {

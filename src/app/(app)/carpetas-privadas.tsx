@@ -8,7 +8,8 @@ import Encabezado from "@/components/ui/encabezado";
 import ListaItem from "@/components/ui/lista-item";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import useNavegacion from "@/use-navegacion";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
+import { Text } from "@/components/ui/texto";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function CarpetasPrivadas() {
@@ -50,6 +51,7 @@ export default function CarpetasPrivadas() {
 						renderItem={({ item }) => (
 							<ListaItem
 								titulo={item.titulo ?? ""}
+								tituloEspaciado
 								subtitulo={subtitulo(item)}
 								icono={<Ionicons name="lock-closed" size={14} color="#9ca3af" />}
 								onClick={() => item.id && verEscritosDeLaCarpeta(item.id)}

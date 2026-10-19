@@ -3,7 +3,8 @@ import Cuerpo from "@/components/ui/cuerpo";
 import PantallaObjetivos from "@/pantallas/objetivos/pantalla-objetivos";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, TouchableOpacity, View } from "react-native";
+import { Text } from "@/components/ui/texto";
 
 type PeriodoObjetivo = "hoy" | "semana" | "mes" | "anio" | "lustro";
 

@@ -1,7 +1,8 @@
 import { pedirSync } from "@/sync/pedir-sync";
 import { useEstadoSync } from "@/sync/estado-sync";
 import { EstadoGuardado } from "@/sync/tipos";
-import { TouchableOpacity, Text, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import { Text } from "@/components/ui/texto";
 import Toast from "react-native-toast-message";
 
 const textoGlobal: Record<EstadoGuardado, string> = {

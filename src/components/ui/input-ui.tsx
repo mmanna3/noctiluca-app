@@ -1,4 +1,4 @@
-import { TextInput } from "react-native";
+import { TextInput } from "@/components/ui/texto";
 
 interface InputProps {
 	id?: string;

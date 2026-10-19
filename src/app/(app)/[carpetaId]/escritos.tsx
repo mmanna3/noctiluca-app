@@ -8,7 +8,8 @@ import useNavegacion from "@/use-navegacion";
 import { useCarpeta } from "@/sync/lecturas";
 import { eliminarCarpetaLocal } from "@/sync/repositorio-carpetas";
 import { useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
+import { Text } from "@/components/ui/texto";
 import Toast from "react-native-toast-message";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -88,6 +89,7 @@ export default function VerCarpeta() {
 								return (
 									<ListaItem
 										titulo={c.titulo ?? ""}
+										tituloEspaciado
 										subtitulo={subtituloCarpeta(c)}
 										onClick={() => destino !== undefined && irACarpeta(destino)}
 									/>
