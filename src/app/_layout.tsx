@@ -17,12 +17,6 @@ import {
 	InstrumentSans_600SemiBold,
 	InstrumentSans_700Bold,
 } from "@expo-google-fonts/instrument-sans";
-import {
-	SourceSerif4_400Regular,
-	SourceSerif4_500Medium,
-	SourceSerif4_600SemiBold,
-	SourceSerif4_700Bold,
-} from "@expo-google-fonts/source-serif-4";
 import Toast, { ErrorToast, SuccessToast, ToastConfig } from "react-native-toast-message";
 import { estiloFuente } from "@/components/ui/texto";
 
@@ -43,10 +37,6 @@ const FUENTES = {
 	InstrumentSans_500Medium,
 	InstrumentSans_600SemiBold,
 	InstrumentSans_700Bold,
-	SourceSerif4_400Regular,
-	SourceSerif4_500Medium,
-	SourceSerif4_600SemiBold,
-	SourceSerif4_700Bold,
 };
 
 /**

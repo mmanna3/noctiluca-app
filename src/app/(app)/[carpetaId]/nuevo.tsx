@@ -52,7 +52,7 @@ export default function NuevoEscrito() {
 					value={titulo}
 					onChangeText={setTitulo}
 					placeholder="Título"
-					className="font-serif tracking-[0.4px] text-xl font-semibold text-slate-900 py-2 mb-2"
+					className="text-xl font-semibold text-slate-900 py-2 mb-2"
 				/>
 				<View className="pt-4 flex-1">
 					<TextInput
@@ -61,7 +61,7 @@ export default function NuevoEscrito() {
 						placeholder="Texto"
 						multiline
 						textAlignVertical="top"
-						className="font-serif tracking-[0.4px] flex-1 text-base text-slate-900 border-b border-gray-200 py-2"
+						className="flex-1 text-base text-slate-900 border-b border-gray-200 py-2"
 					/>
 				</View>
 			</Cuerpo>

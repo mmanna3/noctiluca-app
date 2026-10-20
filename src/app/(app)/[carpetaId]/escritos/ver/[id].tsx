@@ -96,7 +96,7 @@ export default function VerEscrito() {
 					value={titulo}
 					onChangeText={setTitulo}
 					placeholder="Título"
-					className="font-serif tracking-[0.4px] text-xl font-semibold text-slate-900 py-2 mb-2"
+					className="text-xl font-semibold text-slate-900 py-2 mb-2"
 				/>
 				<TextInput
 					value={cuerpo}
@@ -104,7 +104,7 @@ export default function VerEscrito() {
 					placeholder="Texto"
 					multiline
 					textAlignVertical="top"
-					className="font-serif tracking-[0.4px] flex-1 text-base text-slate-900"
+					className="flex-1 text-base text-slate-900"
 				/>
 			</Cuerpo>
 		</ScrollView>

@@ -69,8 +69,8 @@ export default function VerEscritoPapelera() {
 				</Boton>
 			</Encabezado>
 			<Cuerpo className="flex-1">
-				<Text className="font-serif tracking-[0.4px] text-xl font-semibold text-slate-900 mb-2">{data.titulo}</Text>
-				<Text className="font-serif tracking-[0.4px] text-base text-slate-700">{data.cuerpo}</Text>
+				<Text className="text-xl font-semibold text-slate-900 mb-2">{data.titulo}</Text>
+				<Text className="text-base text-slate-700">{data.cuerpo}</Text>
 			</Cuerpo>
 		</View>
 	);
