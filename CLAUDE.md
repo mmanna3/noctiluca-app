@@ -53,5 +53,6 @@ assets/         # Íconos, splash, imágenes
 - expo-sqlite (offline, Fase 7)
 - expo-secure-store (JWT en iOS), AsyncStorage (JWT en web)
 - expo-crypto (hashing contraseñas)
+- expo-notifications (recordatorios locales de hábitos, solo iPhone: `src/notificaciones/`)
 - lucide-react-native (íconos)
 - victory-native (gráficos)

@@ -17,6 +17,7 @@ import {
 	TrackerHabitoView,
 	trackerDiaDesde,
 } from "./lecturas-core";
+import { cantidadSinMarcar, HabitoResumenLocal, resumenSemanalDesde } from "./habitos-core";
 import { CarpetaLocal } from "./tipos";
 import { useLiveQuery } from "./use-live-query";
 
@@ -84,6 +85,20 @@ export const useTrackerDia = (fecha: Date): TrackerHabitoView[] | undefined =>
 		const [habitos, registros] = await Promise.all([habitosDb.todos(), registrosHabitoDb.todos()]);
 		return trackerDiaDesde(habitos, registros, fecha);
 	}, [fecha.getTime()]);
+
+/** Cantidad de hábitos activos sin marcar en cada uno de los `dias` (misma posición). */
+export const useSinMarcarPorDia = (dias: Date[]): number[] | undefined =>
+	useLiveQuery(async () => {
+		const [habitos, registros] = await Promise.all([habitosDb.todos(), registrosHabitoDb.todos()]);
+		return dias.map((dia) => cantidadSinMarcar(habitos, registros, dia));
+	}, [dias.map((d) => d.getTime()).join(",")]);
+
+/** Resumen semanal de hábitos calculado desde la base local (offline). */
+export const useResumenSemanal = (fechaSemana: Date): HabitoResumenLocal[] | undefined =>
+	useLiveQuery(async () => {
+		const [habitos, registros] = await Promise.all([habitosDb.todos(), registrosHabitoDb.todos()]);
+		return resumenSemanalDesde(habitos, registros, fechaSemana);
+	}, [fechaSemana.getTime()]);
 
 /** Lista de objetivos por tipo (día/semana/mes) y clave de período. */
 export const useListaObjetivos = (
